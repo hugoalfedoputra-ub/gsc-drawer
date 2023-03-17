@@ -7,7 +7,7 @@ import { getAuth } from "firebase/auth";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-    apiKey: "AIzaSyB33XbnCacAxn4G_69O329bNbQAviWcNuw",
+    apiKey: process.env.FIREBASE_API_KEY,
     authDomain: "drawer-webapp.firebaseapp.com",
     projectId: "drawer-webapp",
     storageBucket: "drawer-webapp.appspot.com",

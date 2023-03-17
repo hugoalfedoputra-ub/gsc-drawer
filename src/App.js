@@ -6,8 +6,6 @@ import Account from "./components/Account";
 import { AuthContextProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Discover from "./components/Discover";
-import Artists from "./components/Artists";
-import Artworks from "./components/Artworks";
 
 function App() {
     return (
