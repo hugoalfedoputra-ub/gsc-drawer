@@ -6,6 +6,7 @@ import Account from "./components/Account";
 import { AuthContextProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Discover from "./components/Discover";
+import UserPage from "./components/UserPage";
 
 function App() {
     return (
@@ -23,7 +24,6 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-
                     <Route
                         path="/account"
                         element={
@@ -32,6 +32,7 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
+                    <Route path="/:userId" element={<UserPage />}></Route>
                 </Routes>
             </AuthContextProvider>
         </div>
