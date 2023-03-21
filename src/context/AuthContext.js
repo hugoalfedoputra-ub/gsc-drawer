@@ -57,3 +57,14 @@ export const AuthContextProvider = ({ children }) => {
 export const UserAuth = () => {
     return useContext(UserContext);
 };
+
+export const keepUserWhenRefreshed = () => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            const uid = user.uid;
+        } else {
+            console.log("userless");
+        }
+    });
+};

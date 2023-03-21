@@ -1,13 +1,55 @@
-import { getAuth } from "firebase/auth";
-import { doc, getDoc, getFirestore, setDoc, updateDoc } from "firebase/firestore";
-import React from "react";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
+import Navbar from "./Navbar";
 
 const Account = () => {
     const { user, logout } = UserAuth();
+    const [open, isOpen] = useState();
+    const [checkOpen, setCheckOpen] = useState();
 
+    const db = getFirestore();
+    const auth = getAuth();
     const navigate = useNavigate();
+
+    let openRequestStatus = "";
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            openRequestStatus = await (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data().openRequest;
+            setCheckOpen(openRequestStatus);
+            console.log(openRequestStatus);
+        } else {
+            console.log("userless");
+        }
+    });
+
+    const handleOpenRequest = async () => {
+        window.addEventListener("click", (e) => {
+            e.preventDefault();
+        });
+        // console.log(await (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data().openRequest);
+        if (openRequestStatus === false) {
+            const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+            await updateDoc(docRef, {
+                openRequest: true,
+            }).then(isOpen(true));
+        } else if (openRequestStatus === true) {
+            const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+            await updateDoc(docRef, {
+                openRequest: false,
+            }).then(isOpen(false));
+        }
+    };
+
+    const RequestButton = ({ isItOpen }) => {
+        if (isItOpen === true) {
+            return <button onClick={() => handleOpenRequest()}>close request</button>;
+        } else if (isItOpen === false) {
+            return <button onClick={() => handleOpenRequest()}>open request</button>;
+        }
+    };
 
     const handleLogout = async () => {
         try {
@@ -19,37 +61,19 @@ const Account = () => {
         }
     };
 
-    const handleOpenRequest = async (e) => {
-        e.preventDefault();
-        const db = getFirestore();
-
-        // console.log(await (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data().openRequest);
-        const openRequestStatus = await (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data().openRequest;
-        if (openRequestStatus === false) {
-            const docRef = doc(db, "individual-user-page", getAuth().currentUser.uid);
-            await updateDoc(docRef, {
-                openRequest: true,
-            }).then((document.getElementById("opreq").innerHTML = "close requests"));
-        } else if (openRequestStatus === true) {
-            const docRef = doc(db, "individual-user-page", getAuth().currentUser.uid);
-            await updateDoc(docRef, {
-                openRequest: false,
-            }).then((document.getElementById("opreq").innerHTML = "open requests"));
-        }
-    };
-
     return (
         <div>
+            <Navbar />
             <div>
-                <h1 className="text-3xl font-bold">account</h1>
+                <div className="flex flex-row justify-between">
+                    <h1 className="text-3xl font-bold">settings</h1>
+                </div>
                 <p>user email: {user && user.email} </p>
                 <p>display name: {user && user.displayName}</p>
-                <button id="opreq" onClick={handleOpenRequest}>
-                    open requests
-                </button>
+                <div>{<RequestButton isItOpen={checkOpen} />}</div>
                 <br />
                 <br />
-                <button onClick={handleLogout}>logout</button>
+                <button onClick={() => handleLogout()}>logout</button>
             </div>
         </div>
     );

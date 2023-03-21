@@ -7,6 +7,10 @@ import { AuthContextProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Discover from "./components/Discover";
 import UserPage from "./components/UserPage";
+import NewRequest from "./components/NewRequest";
+import InboundPage from "./components/InboundPage";
+import Transaction from "./components/Transaction";
+import Submission from "./components/Submission";
 
 function App() {
     return (
@@ -32,7 +36,54 @@ function App() {
                             </ProtectedRoute>
                         }
                     />
-                    <Route path="/:userId" element={<UserPage />}></Route>
+                    <Route
+                        path="/user/:userId/"
+                        element={
+                            <ProtectedRoute>
+                                <UserPage />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/user/:userId/new"
+                        element={
+                            <ProtectedRoute>
+                                <NewRequest />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/user/:userId/transaction"
+                        element={
+                            <ProtectedRoute>
+                                <Transaction />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/request/:requestId"
+                        element={
+                            <ProtectedRoute>
+                                <InboundPage />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/submission"
+                        element={
+                            <ProtectedRoute>
+                                <Submission />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/submission/:requestId"
+                        element={
+                            <ProtectedRoute>
+                                <Submission />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
                 </Routes>
             </AuthContextProvider>
         </div>
