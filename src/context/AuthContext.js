@@ -23,11 +23,11 @@ export const AuthContextProvider = ({ children }) => {
             });
             await updateProfile(auth.currentUser, { displayName: disname }).catch((e) => {
                 setError(e.message);
-                console.log(e.message);
+                console.log(error);
             });
         } catch (e) {
             setError(e.message);
-            console.log(e.message);
+            console.log(error);
         }
 
         console.log(createUser.id);

@@ -35,7 +35,7 @@ const Transaction = () => {
     const TransactionPanel = ({ response }) => {
         return (
             <>
-                <div>date</div>
+                <div className="border-t-2 border-solid border-black">date</div>
                 <div>{moment(response.tStamp).format("DD/MM/YYYY")}</div>
                 <div>request ID</div>
                 <div>{response.id}</div>
@@ -44,10 +44,10 @@ const Transaction = () => {
                 <div>work status</div>
                 <div>{response.status}</div>
                 <div>amount paid</div>
+                <div>{response.price}</div>
                 <button className="border-2 border-solid border-black rounded-lg p-1">
                     <Link to={"/submission/" + response.id}>deliver</Link>
                 </button>
-                <div className="border-b-2 border-solid border-black">{response.price}</div>
             </>
         );
     };

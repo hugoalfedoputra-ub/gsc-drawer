@@ -4,7 +4,6 @@ import moment from "moment/moment";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
-import InboundPage from "./InboundPage";
 import NotificationPanel from "./NotificationPanel";
 
 const Navbar = () => {
@@ -27,7 +26,6 @@ const Navbar = () => {
                 console.log(e.message);
             }
         }
-
         window.addEventListener("mousedown", handleClickOutside);
         return () => {
             window.removeEventListener("mousedown", handleClickOutside);
@@ -44,7 +42,6 @@ const Navbar = () => {
                 console.log(e.message);
             }
         }
-
         window.addEventListener("mousedown", handleClickOutside);
         return () => {
             window.removeEventListener("mousedown", handleClickOutside);
@@ -54,15 +51,8 @@ const Navbar = () => {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             let userInfo = null;
-            var i = 0;
-            do {
-                userInfo = (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data();
-                console.log("loading...");
-                i++;
-                if (i > 2) {
-                    break;
-                }
-            } while (userInfo != null);
+            userInfo = (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data();
+            console.log("loading...");
             try {
                 document.getElementById("get-account").innerHTML = "<a href='/user/" + userInfo.userId.disnameId + "'>profile</a>";
             } catch (e) {

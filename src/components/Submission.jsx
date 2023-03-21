@@ -1,6 +1,6 @@
 import { collection, getFirestore, onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "./Navbar";
 
 const Submission = () => {
@@ -28,27 +28,39 @@ const Submission = () => {
     }, []);
     console.log(message);
 
+    const navigate = useNavigate();
+    const openSubmissionPage = (input) => {
+        navigate("/submission/" + input + "/upload");
+    };
+
     const RequestSubmission = ({ response }) => {
         return (
             <>
-                <div>this is where you submit requests</div>
+                <div className="font-bold text-3xl">request detail</div>
+                <div>request ID</div>
                 <div>{response.id}</div>
+                <div>amount paid</div>
+                <div>{response.price}</div>
+                <div>description</div>
+                <div>{response.desc}</div>
+                <div>reference URL</div>
+                <div>{response.ref}</div>
+                <div>client name</div>
+                <div>{response.clName}</div>
+                <br />
+                <div>submission</div>
+                <button onClick={() => openSubmissionPage(requestId)}>open submission</button>
             </>
         );
     };
 
     const ArtworkSubmission = () => {
-        return (
-            <>
-                <div>this is where you submit personal artworks</div>
-            </>
-        );
+        navigate("/submission/upload");
     };
 
     return (
         <>
             <Navbar />
-            <div>hello from the submission page</div>
             {requestId ? message && message.map((relevant) => <RequestSubmission key={relevant.id} response={relevant} />) : <ArtworkSubmission />}
         </>
     );

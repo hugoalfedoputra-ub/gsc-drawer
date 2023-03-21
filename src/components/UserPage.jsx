@@ -1,10 +1,9 @@
-import { render } from "@testing-library/react";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, getFirestore } from "firebase/firestore";
-import React, { useCallback, useEffect } from "react";
-import { Link, Route, useParams } from "react-router-dom";
+import React from "react";
+import { useParams } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
 import Navbar from "./Navbar";
-import NewRequest from "./NewRequest";
 
 const UserPage = () => {
     let { userId } = useParams();

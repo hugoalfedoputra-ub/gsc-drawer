@@ -11,6 +11,7 @@ import NewRequest from "./components/NewRequest";
 import InboundPage from "./components/InboundPage";
 import Transaction from "./components/Transaction";
 import Submission from "./components/Submission";
+import SubmissionPage from "./components/SubmissionPage";
 
 function App() {
     return (
@@ -81,6 +82,22 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <Submission />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/submission/upload"
+                        element={
+                            <ProtectedRoute>
+                                <SubmissionPage />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/submission/:requestId/upload"
+                        element={
+                            <ProtectedRoute>
+                                <SubmissionPage />
                             </ProtectedRoute>
                         }
                     ></Route>

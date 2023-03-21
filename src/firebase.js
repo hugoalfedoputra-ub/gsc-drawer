@@ -12,7 +12,7 @@ const firebaseConfig = {
     apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
     authDomain: "drawer-webapp.firebaseapp.com",
     projectId: "drawer-webapp",
-    storageBucket: "drawer-webapp.appspot.com",
+    storageBucket: "gs://drawer-webapp.appspot.com",
     messagingSenderId: "1038545258018",
     appId: "1:1038545258018:web:7bad0438c0483aeb212c7b",
 };
