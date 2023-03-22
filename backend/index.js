@@ -2,12 +2,14 @@ const express = require("express");
 const cors = require("cors");
 require("dotenv").config();
 const bodyParser = require("body-parser");
+const midtransClient = require("midtrans-client");
 
 console.log("hello world");
 
 const app = express();
-
-const midtransClient = require("midtrans-client");
+app.use(cors());
+app.use(express.json());
+app.use(bodyParser.json());
 
 let snap = new midtransClient.Snap({
     isProduction: false,
@@ -37,16 +39,13 @@ snap.createTransaction(parameter).then((transaction) => {
     console.log("transactionToken:", transactionToken);
 });
 
-app.use(cors());
-app.use(express.json());
-app.use(bodyParser.json());
-
-app.get("/api/message", (req, res) => {
+app.get("/message", (req, res) => {
     res.json({ message: "hello from server!" });
 });
 
-app.listen(8000, () => {
-    console.log("server is running on port 8000");
+const port = process.env.PORT || 8000;
+app.listen(port, () => {
+    console.log(`server is running on port ${port}`);
 });
 
 module.exports = app;
