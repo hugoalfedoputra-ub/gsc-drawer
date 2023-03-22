@@ -43,7 +43,7 @@ app.get("/message", (req, res) => {
     res.json({ message: "hello from server!" });
 });
 
-const port = process.env.PORT || 8000;
+const port = 8000;
 app.listen(port, () => {
     console.log(`server is running on port ${port}`);
 });
