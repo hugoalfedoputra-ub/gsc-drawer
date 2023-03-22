@@ -14,7 +14,6 @@ import Submission from "./components/Submission";
 import SubmissionPage from "./components/SubmissionPage";
 
 function App() {
-    // midtrans querystring is driving me insane
     return (
         <div className="App mx-10 my-10 z-0">
             {/* there are margins ^^here^^, remove in further development */}
