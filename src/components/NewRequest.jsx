@@ -2,7 +2,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { snap } from "../midtrans";
 import Navbar from "./Navbar";
 
 const NewRequest = () => {
@@ -72,6 +71,8 @@ const NewRequest = () => {
                         status: "pending",
                         tStamp: date.getTime(),
                     });
+                    const data = { reqId: timestampedReqId, gross: amount };
+                    const url = "https://codeatzenonsenn.com/api";
                 } catch (e) {
                     setError(e.message);
                     console.log(error);
