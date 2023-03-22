@@ -10,7 +10,6 @@ const SubmissionPage = () => {
     let { requestId } = useParams();
 
     const [imageUpload, setImageUpload] = useState(null);
-    const [url, setUrl] = useState();
     const [title, setTitle] = useState("");
 
     const db = getFirestore();
@@ -25,22 +24,30 @@ const SubmissionPage = () => {
             const date = new Date();
             const imageRef = ref(storage, `artwork/${date.getTime()}`);
             uploadBytes(imageRef, imageUpload)
+                .then(async () => {
+                    const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+                    await updateDoc(docRef, {
+                        artId: arrayUnion(date.getTime().toString() + "+" + title),
+                    });
+                })
+                .catch((error) => console.log(error.message))
                 .then(() => {
                     console.log("image uploading...");
                     getDownloadURL(imageRef)
-                        .then((url) => setUrl(url))
-                        .catch((error) => console.log(error.message))
-                        .then(async () => {
-                            const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+                        .then(async (url) => {
+                            const docRef = doc(db, "user-request", `/${requestId}`);
                             await updateDoc(docRef, {
-                                artId: arrayUnion(date.getTime().toString() + "+" + requestId + "+" + title),
+                                status: "delivered",
+                                artUrl: url,
                             });
+                            console.log(url);
                         })
-                        .then(setImageUpload(null))
-                        .then(setTitle(""));
+                        .catch((error) => console.log(error.message));
                 })
                 .catch((error) => console.log(error.message))
-                .then(navigate("/user/" + getUser.user.displayName + "/transaction"));
+                .then(setImageUpload(null))
+                .then(setTitle(""))
+                .then(navigate("/discover/artworks"));
         }
     };
 

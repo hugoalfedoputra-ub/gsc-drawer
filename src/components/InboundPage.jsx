@@ -8,24 +8,32 @@ const InboundPage = () => {
     console.log(requestId);
 
     const [message, setMessage] = useState([]);
-    const navigate = useNavigate();
+    const [userId, setUserId] = useState();
+    const navigate = useNavigate("");
 
     const db = getFirestore();
 
     let content = [];
+    let userInfo = [];
     useEffect(() => {
         const q = query(collection(db, "user-request"));
         const unsub = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 if (doc.id === requestId && doc.data().clName === "") {
                     content.push({ ...doc.data(), id: doc.id, clName: "Anonymous" });
+                    userInfo.push({ artistName: doc.data().arName });
                 } else if (doc.id === requestId && doc.data().clName !== "") {
                     content.push({ ...doc.data(), id: doc.id });
+                    userInfo.push({ artistName: doc.data().arName });
                 }
             });
             setMessage(content);
+            setUserId(userInfo);
+            console.log(userId[0].artistName);
         });
-        return () => unsub();
+        return () => {
+            unsub();
+        };
     }, []);
     console.log(message);
 
@@ -35,7 +43,7 @@ const InboundPage = () => {
         await updateDoc(updRef, {
             status: "accepted",
         });
-        navigate("/user/:userId/transaction");
+        navigate("/user/" + userId[0].artistName + "/transaction");
     };
     const handleReject = async () => {
         console.log("rejecting...");
@@ -43,7 +51,7 @@ const InboundPage = () => {
         await updateDoc(updRef, {
             status: "rejected",
         });
-        navigate("/user/:userId/transaction");
+        navigate("/user/" + userId[0].artistName + "/transaction");
     };
 
     const ResponsePanel = ({ response }) => {

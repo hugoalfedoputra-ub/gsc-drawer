@@ -1,8 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, getFirestore } from "firebase/firestore";
-import React from "react";
 import { useParams } from "react-router-dom";
-import { UserAuth } from "../context/AuthContext";
 import Navbar from "./Navbar";
 
 const UserPage = () => {

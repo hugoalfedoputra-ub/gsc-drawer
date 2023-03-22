@@ -94,17 +94,16 @@ const Navbar = () => {
     return (
         <div>
             <div className="flex flex-row">
-                <div className="basis-[85%]">
+                <div className="basis-[90%]">
                     <h1 className="text-3xl font-bold">
                         <Link to="/discover/artists">Drawer.</Link>
                     </h1>
                 </div>
 
-                <div className="flex flex-row basis-[15%] justify-between">
+                <div className="flex flex-row basis-[10%] justify-between">
                     <button>
                         <Link to="/submission">(+)</Link>
                     </button>
-                    <button>cht</button>
                     <button
                         onClick={() => {
                             if (!isOpen) {

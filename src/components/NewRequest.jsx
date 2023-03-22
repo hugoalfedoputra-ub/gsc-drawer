@@ -9,6 +9,7 @@ const NewRequest = () => {
     const [description, setDescription] = useState("");
     const [refUrl, setRefUrl] = useState("");
     const [clientName, setClientName] = useState("");
+    const [artistName, setArtistName] = useState("");
     const [receiver, setReceiver] = useState("");
 
     const [error, setError] = useState("");
@@ -32,13 +33,14 @@ const NewRequest = () => {
             const tempUid = uid.pop();
 
             if (temp.id.disnameId === userId) {
+                setArtistName(userId);
                 setReceiver(tempUid.uid);
             }
         });
     });
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    const handleSubmit = async () => {
+        window.addEventListener("click", (e) => e.preventDefault());
         setError("");
 
         const date = new Date();
@@ -62,6 +64,7 @@ const NewRequest = () => {
                         desc: description,
                         ref: refUrl,
                         clName: clientName,
+                        arName: artistName,
                         clId: userInfo,
                         rcvId: receiver,
                         status: "pending",
@@ -85,7 +88,7 @@ const NewRequest = () => {
             <Navbar />
 
             <div>hello new request</div>
-            <form className="flex flex-col" onSubmit={handleSubmit}>
+            <form className="flex flex-col">
                 <div className="flex flex-row">
                     <label className="basis-[20%]">Amount</label>
                     <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setAmount(e.target.value)} type="text"></input>
@@ -103,7 +106,7 @@ const NewRequest = () => {
                     <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setClientName(e.target.value)} type="text" defaultValue="Anonymous"></input>
                 </div>
                 Important notice handle here
-                <button type="submit" onClick={handleSubmit()}>
+                <button type="submit" onClick={() => handleSubmit()}>
                     request artwork
                 </button>
             </form>

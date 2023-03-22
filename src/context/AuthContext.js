@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile, getAuth } from "firebase/auth";
-import { auth, db } from "../firebase";
-import { collection, addDoc, doc, setDoc } from "firebase/firestore";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "firebase/auth";
+import { auth } from "../firebase";
+import { doc, setDoc, arrayUnion } from "firebase/firestore";
 import { getFirestore } from "firebase/firestore";
 
 const UserContext = createContext();
@@ -19,6 +19,7 @@ export const AuthContextProvider = ({ children }) => {
                 return setDoc(doc(db, "individual-user-page", cred.user.uid), {
                     userId: { disnameId },
                     openRequest: false,
+                    artId: arrayUnion("foo"),
                 });
             });
             await updateProfile(auth.currentUser, { displayName: disname }).catch((e) => {
@@ -56,15 +57,4 @@ export const AuthContextProvider = ({ children }) => {
 
 export const UserAuth = () => {
     return useContext(UserContext);
-};
-
-export const keepUserWhenRefreshed = () => {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const uid = user.uid;
-        } else {
-            console.log("userless");
-        }
-    });
 };
