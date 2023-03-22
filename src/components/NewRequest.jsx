@@ -1,7 +1,8 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { snap } from "../midtrans";
 import Navbar from "./Navbar";
 
 const NewRequest = () => {
@@ -19,7 +20,7 @@ const NewRequest = () => {
     const colRef = collection(db, "individual-user-page");
 
     let { userId } = useParams();
-    console.log(userId);
+    // console.log(userId);
 
     getDocs(colRef).then((snapshot) => {
         let content = [];
@@ -59,7 +60,8 @@ const NewRequest = () => {
                     }
                 } while (userInfo != null);
                 try {
-                    await setDoc(doc(db, "user-request", "req-" + date.getTime().toString()), {
+                    const timestampedReqId = "req-" + date.getTime().toString();
+                    await setDoc(doc(db, "user-request", timestampedReqId), {
                         price: amount,
                         desc: description,
                         ref: refUrl,
@@ -80,18 +82,22 @@ const NewRequest = () => {
         });
 
         console.log("request submitted!");
-        navigate("/discover/artworks");
+        //navigate("/discover/artworks");
     };
 
     return (
         <>
-            <Navbar />
-
-            <div>hello new request</div>
+            <Link to="/discover/artists">ret</Link>
+            <div className="font-bold text-3xl">hello new request</div>
+            <div>for user: {userId}</div>
             <form className="flex flex-col">
                 <div className="flex flex-row">
                     <label className="basis-[20%]">Amount</label>
-                    <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setAmount(e.target.value)} type="text"></input>
+                    <input
+                        className="basis-[80%] border-b-2 border-black"
+                        onChange={(e) => setAmount(e.target.value.replaceAll("[^1234567890]", ""))}
+                        type="text"
+                    ></input>
                 </div>
                 <div className="flex flex-row">
                     <label className="basis-[20%]">Description</label>
