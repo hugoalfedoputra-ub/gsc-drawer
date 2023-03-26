@@ -1,3 +1,5 @@
+import { getAuth } from "firebase/auth";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
@@ -9,6 +11,8 @@ const Signin = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState("");
+
+    const db = getFirestore();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -35,11 +39,11 @@ const Signin = () => {
                 <form onSubmit={handleSubmit}>
                     <div>
                         <label>email address</label>
-                        <input onChange={(e) => setEmail(e.target.value)} className="border-2 border-black" type="email"></input>
+                        <input onChange={(e) => setEmail(e.target.value)} className="border-b-2 border-black" type="email"></input>
                     </div>
                     <div>
                         <label>password</label>
-                        <input onChange={(e) => setPassword(e.target.value)} className="border-2 border-black" type="password"></input>
+                        <input onChange={(e) => setPassword(e.target.value)} className="border-b-2 border-black" type="password"></input>
                     </div>
                     <button>sign in</button>
                 </form>

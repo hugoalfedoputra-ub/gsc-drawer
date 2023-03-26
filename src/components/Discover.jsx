@@ -9,6 +9,12 @@ const Discover = () => {
     return (
         <div>
             <Navbar />
+            <Link to="/discover/artworks" className="pr-4">
+                discover artworks
+            </Link>
+            <Link to="/discover/artists" className="pr-4">
+                discover artists
+            </Link>
             <Routes>
                 <Route
                     path="/artworks"

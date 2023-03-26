@@ -1,3 +1,5 @@
+import { getAuth } from "firebase/auth";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
@@ -11,6 +13,7 @@ const Signup = () => {
     const { createUser } = UserAuth();
 
     const navigate = useNavigate();
+    const db = getFirestore();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -36,15 +39,15 @@ const Signup = () => {
             <form onSubmit={handleSubmit}>
                 <div>
                     <label>email address</label>
-                    <input onChange={(e) => setEmail(e.target.value)} className="border-2 border-black" type="email"></input>
+                    <input onChange={(e) => setEmail(e.target.value)} className="border-b-2 border-black" type="email"></input>
                 </div>
                 <div>
                     <label>display name</label>
-                    <input onChange={(e) => setDisname(e.target.value)} className="border-2 border-black" type="name"></input>
+                    <input onChange={(e) => setDisname(e.target.value)} className="border-b-2 border-black" type="name"></input>
                 </div>
                 <div>
                     <label>password</label>
-                    <input onChange={(e) => setPassword(e.target.value)} className="border-2 border-black" type="password"></input>
+                    <input onChange={(e) => setPassword(e.target.value)} className="border-b-2 border-black" type="password"></input>
                 </div>
                 <button>sign up</button>
             </form>
