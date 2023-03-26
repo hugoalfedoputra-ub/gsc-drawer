@@ -2,7 +2,6 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Navbar from "./Navbar";
 
 const NewRequest = () => {
     const [amount, setAmount] = useState("");
@@ -93,6 +92,7 @@ const NewRequest = () => {
             while (docLoop.data().status === "pending") {
                 docLoop = await getDoc(docRef);
                 console.log("loading...");
+                document.getElementById("loading").innerHTML = "loading...";
                 if (docLoop.data().status !== "pending") {
                     linkie = docLoop.data().pyLink;
                     console.log(linkie);
@@ -111,6 +111,7 @@ const NewRequest = () => {
 
     return (
         <>
+            <div className="font-bold text-3xl" id="loading"></div>
             <Link to="/discover/artists">ret</Link>
             <div className="font-bold text-3xl">hello new request</div>
             <div>for user: {userId}</div>

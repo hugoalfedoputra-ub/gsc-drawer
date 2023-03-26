@@ -4,21 +4,11 @@ require("dotenv").config();
 const bodyParser = require("body-parser");
 const midtransClient = require("midtrans-client");
 const admin = require("firebase-admin");
-const http = require("http");
-const { Server } = require("socket.io");
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
-const server = http.createServer(app);
-
-const io = new Server(server, {
-    cors: {
-        origin: "https://gsc-drawer-app.vercel.app/new" || "http://localhost:3000",
-        methods: ["GET", "POST"],
-    },
-});
 
 console.log("hello world");
 
@@ -33,10 +23,6 @@ let snap = new midtransClient.Snap({
     isProduction: false,
     serverKey: process.env.MIDTRANS_SERVER_KEY,
     clientKey: process.env.MIDTRANS_CLIENT_KEY,
-});
-
-io.on("connection", (socket) => {
-    console.log(`transcation connected: ${socket.id}`);
 });
 
 const db = admin.firestore();
@@ -86,14 +72,5 @@ const getPayment = () => {
 
 // getPayment();
 setInterval(getPayment, 5000);
-
-app.get("/message", (req, res) => {
-    res.json({ message: "hello from server!" });
-});
-
-const port = process.env.PORT || 8000;
-app.listen(port, () => {
-    console.log(`server is running on port ${port}`);
-});
 
 module.exports = app;
