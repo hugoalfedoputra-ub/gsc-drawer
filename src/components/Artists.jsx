@@ -6,7 +6,7 @@ const Artists = () => {
     // (previous fix was to require the user to refresh page themselves)
     window.onload = function () {
         if (!window.location.hash) {
-            window.location = window.location + "#loaded";
+            window.location = window.location + "#fresh";
             window.location.reload();
         }
     };

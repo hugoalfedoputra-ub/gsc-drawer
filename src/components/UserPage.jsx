@@ -5,10 +5,10 @@ import { storage } from "../firebase";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "./Navbar";
+import { UserAuth } from "../context/AuthContext";
 
 const UserPage = () => {
     let { userId } = useParams();
-    console.log(userId);
 
     const db = getFirestore();
     const colRef = collection(db, "individual-user-page");
@@ -24,11 +24,32 @@ const UserPage = () => {
     let artworks = [];
     let allArtworks = [];
 
+    console.log(UserAuth().user.displayName);
+    const currentUser = UserAuth().user.displayName;
+    // forces check before useEffect
+    if (currentUser === userId) {
+        document.getElementById("check-request").innerHTML = "this is you";
+    }
+
     useEffect(() => {
         const unsub = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 if (doc.data().userId.disnameId === userId) {
-                    content.push({ artId: doc.data().artId });
+                    content.push({ artId: doc.data().artId, userId: doc.data().userId, openRequest: doc.data().openRequest });
+                    if (doc.data().openRequest === true && currentUser !== userId) {
+                        document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
+                        var newRequestButton = document.getElementById("new-request");
+                        newRequestButton.addEventListener("click", async () => {
+                            console.log("making a new request...");
+                            window.location.href = "/user/" + userId + "/new";
+                        });
+                    } else if (currentUser === userId) {
+                        document.getElementById("check-request").innerHTML = "this is you";
+                    } else if (doc.data().openRequest === false) {
+                        document.getElementById("check-request").innerHTML = "requests closed. come again soon!";
+                    }
+                    // inject straight to div via id because i cant think of any other way
+                    document.getElementById("content").innerHTML = userId;
                 }
                 console.log(content);
                 for (let i = 0; i < content.length; i++) {
@@ -73,57 +94,40 @@ const UserPage = () => {
         );
     };
 
-    const auth = getAuth();
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            let userInfo = null;
-            var i = 0;
-            do {
-                userInfo = (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data();
-                console.log("loading...");
-                i++;
-                if (i > 2) {
-                    break;
-                }
-            } while (userInfo != null);
-
-            getDocs(colRef).then((snapshot) => {
-                let content = [];
-                let openRequest = [];
-                let uid = [];
-                snapshot.docs.forEach((doc) => {
-                    uid.push({ uid: doc.id });
-                    content.push({ id: doc.data().userId });
-                    openRequest.push({ openRequest: doc.data().openRequest });
-                    const temp = content.pop();
-                    const tempUid = uid.pop();
-                    const tempOpenRequest = openRequest.pop();
-                    if (temp.id.disnameId === userId) {
-                        // console.log("hello");
-                        console.log(temp.id.disnameId);
-                        // console.log(tempOpenRequest);
-                        // console.log(tempUid.uid);
-                        if (tempOpenRequest.openRequest === true && userInfo.userId.disnameId !== temp.id.disnameId) {
-                            document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
-                            var newRequestButton = document.getElementById("new-request");
-                            newRequestButton.addEventListener("click", async () => {
-                                console.log("making a new request...");
-                                window.location.href = "/user/" + userId + "/new";
-                            });
-                        } else if (userInfo.userId.disnameId === temp.id.disnameId) {
-                            document.getElementById("check-request").innerHTML = "this is you";
-                        } else {
-                            document.getElementById("check-request").innerHTML = "closed";
-                        }
-                        // inject straight to div via id because i cant think of any other way
-                        document.getElementById("content").innerHTML = temp.id.disnameId;
-                    }
-                });
-            });
-        } else {
-            console.log("userless");
-        }
-    });
+    // const auth = getAuth();
+    // onAuthStateChanged(auth, async (user) => {
+    //     if (user) {
+    //         let userInfo = (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data();
+    //         await getDocs(colRef).then((snapshot) => {
+    //             let content = [];
+    //             let openRequest = [];
+    //             snapshot.docs.forEach((doc) => {
+    //                 content.push({ id: doc.data().userId });
+    //                 openRequest.push({ openRequest: doc.data().openRequest });
+    //                 const temp = content.pop();
+    //                 const tempOpenRequest = openRequest.pop();
+    //                 if (temp.id.disnameId === userId) {
+    //                     if (tempOpenRequest.openRequest === true && userInfo.userId.disnameId !== temp.id.disnameId) {
+    //                         document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
+    //                         var newRequestButton = document.getElementById("new-request");
+    //                         newRequestButton.addEventListener("click", async () => {
+    //                             console.log("making a new request...");
+    //                             window.location.href = "/user/" + userId + "/new";
+    //                         });
+    //                     } else if (userInfo.userId.disnameId === temp.id.disnameId) {
+    //                         document.getElementById("check-request").innerHTML = "this is you";
+    //                     } else {
+    //                         document.getElementById("check-request").innerHTML = "closed";
+    //                     }
+    //                     // inject straight to div via id because i cant think of any other way
+    //                     document.getElementById("content").innerHTML = temp.id.disnameId;
+    //                 }
+    //             });
+    //         });
+    //     } else {
+    //         console.log("userless");
+    //     }
+    // });
 
     return (
         <>

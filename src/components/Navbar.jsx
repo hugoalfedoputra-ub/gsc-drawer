@@ -93,39 +93,46 @@ const Navbar = () => {
 
     return (
         <div>
-            <div className="flex flex-row">
-                <div className="basis-[90%]">
+            <div className="flex">
+                <div className="flex-auto w-[80%]">
                     <h1 className="text-3xl font-bold">
                         <Link to="/discover/artists">Drawer.</Link>
                     </h1>
                 </div>
 
-                <div className="flex flex-row basis-[10%] justify-between">
-                    <button>
-                        <Link to="/submission">(+)</Link>
-                    </button>
-                    <button
-                        onClick={() => {
-                            if (!isOpen) {
-                                setIsOpen(true);
-                            } else {
-                                setIsOpen(false);
-                            }
-                        }}
-                    >
-                        ntf
-                    </button>
-                    <button
-                        onClick={() => {
-                            if (!accIsOpen) {
-                                setAccIsOpen(true);
-                            } else {
-                                setAccIsOpen(false);
-                            }
-                        }}
-                    >
-                        acc
-                    </button>
+                <div className="flex-none">
+                    <div className="flex flex-row justify-between">
+                        <button className="flex-none pl-6">
+                            <Link to="/submission">(+)</Link>
+                        </button>
+                        <button className="flex-none pl-6">
+                            <Link to="/chat">cht</Link>
+                        </button>
+                        <button
+                            className="flex-none pl-6"
+                            onClick={() => {
+                                if (!isOpen) {
+                                    setIsOpen(true);
+                                } else {
+                                    setIsOpen(false);
+                                }
+                            }}
+                        >
+                            ntf
+                        </button>
+                        <button
+                            className="flex-none pl-6"
+                            onClick={() => {
+                                if (!accIsOpen) {
+                                    setAccIsOpen(true);
+                                } else {
+                                    setAccIsOpen(false);
+                                }
+                            }}
+                        >
+                            acc
+                        </button>
+                    </div>
                 </div>
             </div>
             <Notification open={isOpen} />

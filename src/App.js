@@ -12,10 +12,11 @@ import InboundPage from "./components/InboundPage";
 import Transaction from "./components/Transaction";
 import Submission from "./components/Submission";
 import SubmissionPage from "./components/SubmissionPage";
+import Chat from "./components/Chat";
 
 function App() {
     return (
-        <div className="App mx-10 my-10 z-0">
+        <div className="App mx-10 my-10 z-0 font-montserrat">
             {/* there are margins ^^here^^, remove in further development */}
             <AuthContextProvider>
                 <Routes>
@@ -98,6 +99,14 @@ function App() {
                         element={
                             <ProtectedRoute>
                                 <SubmissionPage />
+                            </ProtectedRoute>
+                        }
+                    ></Route>
+                    <Route
+                        path="/chat"
+                        element={
+                            <ProtectedRoute>
+                                <Chat />
                             </ProtectedRoute>
                         }
                     ></Route>
