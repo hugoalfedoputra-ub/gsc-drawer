@@ -2,6 +2,17 @@ import { collection, doc, getDocs, getFirestore, limit, query, where } from "fir
 import React, { useCallback, useEffect, useState } from "react";
 
 const Artists = () => {
+    // this function below reloads the window once to alleviate issue where artist name cant be clicked
+    // (previous fix was to require the user to refresh page themselves)
+    window.onload = function () {
+        if (!window.location.hash) {
+            window.location = window.location + "#loaded";
+            window.location.reload();
+        }
+    };
+
+    window.onload();
+
     const [data, setData] = useState([]);
 
     const db = getFirestore();

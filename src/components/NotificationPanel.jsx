@@ -37,7 +37,7 @@ const NotificationPanel = () => {
                 });
 
                 for (let i = 0; i < content.length; i++) {
-                    if (content[i].receiverId === getAuth().currentUser.uid && content[i].qStatus === "pending") {
+                    if (content[i].receiverId === getAuth().currentUser.uid && content[i].qStatus === "paid-pending") {
                         console.log("inbound notification!!!");
                         document.getElementById("inbound-notif").innerHTML = "";
                         document.getElementById("inbound-notif").innerHTML +=

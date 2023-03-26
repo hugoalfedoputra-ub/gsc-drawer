@@ -1,5 +1,5 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -47,6 +47,7 @@ const NewRequest = () => {
         const auth = getAuth();
         let userInfo = null;
 
+        const timestampedReqId = "req-" + date.getTime().toString();
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 var i = 0;
@@ -59,7 +60,6 @@ const NewRequest = () => {
                     }
                 } while (userInfo != null);
                 try {
-                    const timestampedReqId = "req-" + date.getTime().toString();
                     await setDoc(doc(db, "user-request", timestampedReqId), {
                         price: amount,
                         desc: description,
@@ -71,8 +71,6 @@ const NewRequest = () => {
                         status: "pending",
                         tStamp: date.getTime(),
                     });
-                    const data = { reqId: timestampedReqId, gross: amount };
-                    const url = "https://codeatzenonsenn.com/api";
                 } catch (e) {
                     setError(e.message);
                     console.log(error);
@@ -82,8 +80,33 @@ const NewRequest = () => {
             }
         });
 
-        console.log("request submitted!");
-        //navigate("/discover/artworks");
+        const docRef = doc(db, "user-request", timestampedReqId);
+        const docSnap = await getDoc(docRef);
+
+        // try {
+        if (docSnap.exists()) {
+            // window.open(docSnap.data().pyLink);
+            // console.log(docSnap.data());
+            console.log("request submitted!");
+            let docLoop = await getDoc(docRef);
+            let linkie = "";
+            while (docLoop.data().status === "pending") {
+                docLoop = await getDoc(docRef);
+                console.log("loading...");
+                if (docLoop.data().status !== "pending") {
+                    linkie = docLoop.data().pyLink;
+                    console.log(linkie);
+                    window.open(linkie);
+                    break;
+                }
+            }
+            const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+            await delay(2500);
+            navigate("/discover/artworks");
+        }
+        // } catch (e) {
+        //     console.log(e.message);
+        // }
     };
 
     return (
