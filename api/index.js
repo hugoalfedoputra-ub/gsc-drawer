@@ -28,49 +28,40 @@ let snap = new midtransClient.Snap({
 const db = admin.firestore();
 const colRef = db.collection("user-request");
 
-const content = [];
+colRef.onSnapshot((querySnapshot) => {
+    querySnapshot.forEach(
+        (doc) => {
+            if (doc.data().status === "pending") {
+                let parameter = {
+                    transaction_details: {
+                        order_id: doc.id,
+                        gross_amount: parseInt(doc.data().price),
+                    },
+                    credit_card: {
+                        secure: true,
+                    },
+                };
+                snap.createTransaction(parameter)
+                    .then(async (transaction) => {
+                        // transaction token
+                        let transactionToken = transaction.token;
+                        //console.log("transactionToken:", transactionToken);
 
-const getPayment = () => {
-    colRef
-        .get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                if (doc.data().status === "pending") {
-                    content.push({ id: doc.id, price: doc.data().price, status: doc.data().status });
-                    let parameter = {
-                        transaction_details: {
-                            order_id: doc.id,
-                            gross_amount: parseInt(doc.data().price),
-                        },
-                        credit_card: {
-                            secure: true,
-                        },
-                    };
-                    snap.createTransaction(parameter)
-                        .then(async (transaction) => {
-                            // transaction token
-                            let transactionToken = transaction.token;
-                            console.log("transactionToken:", transactionToken);
-
-                            // transaction redirect url
-                            let transactionRedirectUrl = transaction.redirect_url;
-                            console.log("transactionRedirectUrl:", transactionRedirectUrl);
-                            const updateRef = db.collection("user-request").doc(doc.id);
-                            await updateRef.update({ pyLink: transactionRedirectUrl, status: "paid-pending" });
-                        })
-                        .catch((e) => {
-                            console.log("Error occured:", e.message);
-                        });
-                    console.log(content);
-                }
-            });
-        })
-        .catch((error) => {
-            console.error(error);
-        });
-};
-
-// getPayment();
-setInterval(getPayment, 5000);
+                        // transaction redirect url
+                        let transactionRedirectUrl = transaction.redirect_url;
+                        //console.log("transactionRedirectUrl:", transactionRedirectUrl);
+                        const updateRef = db.collection("user-request").doc(doc.id);
+                        await updateRef.update({ pyLink: transactionRedirectUrl, status: "paid-pending" });
+                    })
+                    .catch((e) => {
+                        console.log("Error occured:", e.message);
+                    });
+            }
+        },
+        (error) => {
+            console.log(error.message);
+        }
+    );
+});
 
 module.exports = app;

@@ -1,5 +1,5 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc } from "firebase/firestore";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 
@@ -82,31 +82,28 @@ const NewRequest = () => {
         const docRef = doc(db, "user-request", timestampedReqId);
         const docSnap = await getDoc(docRef);
 
-        // try {
         if (docSnap.exists()) {
-            // window.open(docSnap.data().pyLink);
-            // console.log(docSnap.data());
             console.log("request submitted!");
-            let docLoop = await getDoc(docRef);
             let linkie = "";
-            while (docLoop.data().status === "pending") {
-                docLoop = await getDoc(docRef);
-                console.log("loading...");
-                document.getElementById("loading").innerHTML = "loading...";
-                if (docLoop.data().status !== "pending") {
-                    linkie = docLoop.data().pyLink;
-                    console.log(linkie);
-                    window.open(linkie);
-                    break;
+            onSnapshot(
+                docRef,
+                (querySnapshot) => {
+                    console.log("loading...");
+                    document.getElementById("loading").innerHTML = "loading...";
+                    if (querySnapshot.data().status !== "pending") {
+                        linkie = querySnapshot.data().pyLink;
+                        console.log(linkie);
+                        window.open(linkie);
+                        const delay = (ms) => new Promise((res) => setTimeout(res, ms));
+                        delay(2500);
+                        navigate("/discover/artworks");
+                    }
+                },
+                (error) => {
+                    console.log(error.message);
                 }
-            }
-            const delay = (ms) => new Promise((res) => setTimeout(res, ms));
-            await delay(2500);
-            navigate("/discover/artworks");
+            );
         }
-        // } catch (e) {
-        //     console.log(e.message);
-        // }
     };
 
     return (
