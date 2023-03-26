@@ -71,6 +71,5 @@ const getPayment = () => {
 };
 
 // getPayment();
-setInterval(getPayment, 5000);
 
 module.exports = app;
