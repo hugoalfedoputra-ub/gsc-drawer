@@ -1,5 +1,8 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, limit, onSnapshot, query } from "firebase/firestore";
+import { getDownloadURL, ref } from "firebase/storage";
+import { storage } from "../firebase";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "./Navbar";
 
@@ -9,6 +12,66 @@ const UserPage = () => {
 
     const db = getFirestore();
     const colRef = collection(db, "individual-user-page");
+
+    const [artCard, setArtCard] = useState(new Map());
+    const q = query(collection(db, "individual-user-page"), limit(100));
+
+    const updateMap = (k, v) => {
+        setArtCard(new Map(artCard.set(k, v)));
+    };
+
+    let content = [];
+    let artworks = [];
+    let allArtworks = [];
+
+    useEffect(() => {
+        const unsub = onSnapshot(q, (querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                if (doc.data().userId.disnameId === userId) {
+                    content.push({ artId: doc.data().artId });
+                }
+                console.log(content);
+                for (let i = 0; i < content.length; i++) {
+                    artworks.push(content[i].artId);
+                }
+                for (let i = 0; i < artworks.length; i++) {
+                    for (let j = 0; j < artworks[i].length; j++) {
+                        if (artworks[i][j] !== "foo") {
+                            allArtworks.push(artworks[i][j]);
+                        }
+                    }
+                }
+                for (let i = 0; i < allArtworks.length; i++) {
+                    let temp = [];
+                    temp = allArtworks[i].split("+", 2); // there will be an edge case where a user inputs "+" in their title
+
+                    const imageRef = ref(storage, "artwork/" + temp[0]);
+                    console.log(imageRef);
+                    getDownloadURL(imageRef)
+                        .then((url) => {
+                            updateMap(temp[0], { title: temp[1], artUrl: url });
+                        })
+                        .catch((error) => console.log(error.message));
+                }
+            });
+        });
+        return () => {
+            unsub();
+        };
+    }, []);
+
+    const PersonalArtworkPanel = ({ response }) => {
+        return (
+            <>
+                <div className="flex flex-col">
+                    <div>
+                        <div>{response.title ? response.title : "no_title"}</div>
+                        <img className="h-12 w-12" src={response.artUrl} alt="" />
+                    </div>
+                </div>
+            </>
+        );
+    };
 
     const auth = getAuth();
     onAuthStateChanged(auth, async (user) => {
@@ -71,7 +134,9 @@ const UserPage = () => {
             <div className="flex flex-row">
                 <div className="basis-[25%]" id="check-request"></div>
                 <div className="basis-[75%]" id="make-new-request">
-                    artworks go here
+                    {Array.from(artCard).map(([key, value]) => (
+                        <PersonalArtworkPanel key={key} response={value} />
+                    ))}
                 </div>
             </div>
         </>
