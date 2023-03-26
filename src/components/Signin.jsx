@@ -18,8 +18,7 @@ const Signin = () => {
             navigate("/discover/artworks");
         } catch (e) {
             setError(e.message);
-            document.getElementById("error-validation").innerHTML =
-                "Incorrect email or password submitted. If you have forgotten your password, we apologize for not having a password recovery function.";
+            document.getElementById("error-validation").innerHTML = "Incorrect email or password submitted.";
             console.log(error);
         }
     };
@@ -45,6 +44,7 @@ const Signin = () => {
                     </div>
                     <button>sign in</button>
                 </form>
+                <Link to="/iforgor">forgot password?</Link>
                 <div id="error-validation"></div>
             </div>
         </div>

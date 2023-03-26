@@ -13,6 +13,7 @@ import Transaction from "./components/Transaction";
 import Submission from "./components/Submission";
 import SubmissionPage from "./components/SubmissionPage";
 import Chat from "./components/Chat";
+import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Signin />} />
                     <Route path="/signup" element={<Signup />} />
+                    <Route path="/iforgor" element={<ForgotPassword />} />
                     <Route
                         path="/discover/*"
                         element={
