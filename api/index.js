@@ -43,10 +43,6 @@ colRef.onSnapshot((querySnapshot) => {
                 };
                 snap.createTransaction(parameter)
                     .then(async (transaction) => {
-                        // transaction token
-                        let transactionToken = transaction.token;
-                        //console.log("transactionToken:", transactionToken);
-
                         // transaction redirect url
                         let transactionRedirectUrl = transaction.redirect_url;
                         //console.log("transactionRedirectUrl:", transactionRedirectUrl);
