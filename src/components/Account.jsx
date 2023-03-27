@@ -1,14 +1,17 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { arrayUnion, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
+import { storage } from "../firebase";
 import Navbar from "./Navbar";
 
 const Account = () => {
     const { user, logout } = UserAuth();
     const [open, isOpen] = useState();
     const [checkOpen, setCheckOpen] = useState();
+    const [profilePicture, setProfilePicture] = useState();
 
     const db = getFirestore();
     const auth = getAuth();
@@ -61,6 +64,22 @@ const Account = () => {
         }
     };
 
+    const handleUploadProfilePicture = (event) => {
+        document.addEventListener("submit", (e) => e.preventDefault());
+        if (profilePicture != null) {
+            const date = new Date();
+            const imageRef = ref(storage, `profile-pic/${date.getTime()}`);
+            uploadBytes(imageRef, profilePicture)
+                .then(async () => {
+                    const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+                    await updateDoc(docRef, {
+                        profilePicture: date.getTime().toString(),
+                    });
+                })
+                .catch((error) => console.log(error.message));
+        }
+    };
+
     return (
         <div>
             <Navbar />
@@ -71,7 +90,18 @@ const Account = () => {
                 <p>user email: {user && user.email} </p>
                 <p>display name: {user && user.displayName}</p>
                 <div>{<RequestButton isItOpen={checkOpen} />}</div>
-                <br />
+                <form onSubmit={() => handleUploadProfilePicture()}>
+                    <label>upload profile picture</label>
+                    <input
+                        onChange={(e) => {
+                            e.preventDefault();
+                            setProfilePicture(e.target.files[0]);
+                        }}
+                        type="file"
+                        accept="image/png, image/jpeg, image/jpg"
+                    ></input>
+                    <button>upload image</button>
+                </form>
                 <br />
                 <button onClick={() => handleLogout()}>logout</button>
             </div>

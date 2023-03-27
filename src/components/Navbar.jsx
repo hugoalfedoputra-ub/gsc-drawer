@@ -1,14 +1,17 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot } from "firebase/firestore";
+import { getDownloadURL, ref } from "firebase/storage";
 import moment from "moment/moment";
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
+import { storage } from "../firebase";
 import NotificationPanel from "./NotificationPanel";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [accIsOpen, setAccIsOpen] = useState(false);
+    const [profilePictureUrl, setProfilePictureUrl] = useState("");
 
     const db = getFirestore();
     const auth = getAuth();
@@ -52,6 +55,14 @@ const Navbar = () => {
         if (user) {
             let userInfo = null;
             userInfo = (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data();
+            const imageRef = ref(storage, "profile-pic/" + userInfo.profilePicture);
+            getDownloadURL(imageRef)
+                .then((url) => {
+                    setProfilePictureUrl(url);
+                    console.log(profilePictureUrl);
+                })
+                .catch((error) => console.log(error.message));
+            console.log(profilePictureUrl);
             console.log("loading...");
             try {
                 document.getElementById("get-account").innerHTML = "<a href='/user/" + userInfo.userId.disnameId + "'>profile</a>";
@@ -130,7 +141,11 @@ const Navbar = () => {
                                 }
                             }}
                         >
-                            acc
+                            {profilePictureUrl ? (
+                                <img src={profilePictureUrl} className="w-[2.25rem] h-[2.25rem] aspect-auto object-cover rounded-full" alt="profile"></img>
+                            ) : (
+                                <div>acc</div>
+                            )}
                         </button>
                     </div>
                 </div>
