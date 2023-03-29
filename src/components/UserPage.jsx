@@ -8,6 +8,14 @@ import Navbar from "./Navbar";
 import { UserAuth } from "../context/AuthContext";
 
 const UserPage = () => {
+    window.onload = function () {
+        if (!window.location.hash) {
+            window.location = window.location + "#fresh";
+            window.location.reload();
+        }
+    };
+    window.onload();
+
     let { userId } = useParams();
 
     const db = getFirestore();
@@ -34,7 +42,7 @@ const UserPage = () => {
     useEffect(() => {
         const unsub = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
-                if (doc.data().userId.disnameId === userId) {
+                if (doc.data().userId === userId) {
                     content.push({ artId: doc.data().artId, userId: doc.data().userId, openRequest: doc.data().openRequest });
                     if (doc.data().openRequest === true && currentUser !== userId) {
                         document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
@@ -106,21 +114,21 @@ const UserPage = () => {
     //                 openRequest.push({ openRequest: doc.data().openRequest });
     //                 const temp = content.pop();
     //                 const tempOpenRequest = openRequest.pop();
-    //                 if (temp.id.disnameId === userId) {
-    //                     if (tempOpenRequest.openRequest === true && userInfo.userId.disnameId !== temp.id.disnameId) {
+    //                 if (temp.id === userId) {
+    //                     if (tempOpenRequest.openRequest === true && userInfo.userId !== temp.id) {
     //                         document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
     //                         var newRequestButton = document.getElementById("new-request");
     //                         newRequestButton.addEventListener("click", async () => {
     //                             console.log("making a new request...");
     //                             window.location.href = "/user/" + userId + "/new";
     //                         });
-    //                     } else if (userInfo.userId.disnameId === temp.id.disnameId) {
+    //                     } else if (userInfo.userId === temp.id) {
     //                         document.getElementById("check-request").innerHTML = "this is you";
     //                     } else {
     //                         document.getElementById("check-request").innerHTML = "closed";
     //                     }
     //                     // inject straight to div via id because i cant think of any other way
-    //                     document.getElementById("content").innerHTML = temp.id.disnameId;
+    //                     document.getElementById("content").innerHTML = temp.id;
     //                 }
     //             });
     //         });

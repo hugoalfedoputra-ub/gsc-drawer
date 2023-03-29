@@ -24,23 +24,24 @@ const SubmissionPage = () => {
             const date = new Date();
             const imageRef = ref(storage, `artwork/${date.getTime()}`);
             uploadBytes(imageRef, imageUpload)
-                .then(async () => {
-                    const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
-                    await updateDoc(docRef, {
-                        artId: arrayUnion(date.getTime().toString() + "+" + title),
-                    });
-                })
                 .catch((error) => console.log(error.message))
                 .then(() => {
                     console.log("image uploading...");
                     getDownloadURL(imageRef)
                         .then(async (url) => {
-                            const docRef = doc(db, "user-request", `/${requestId}`);
-                            await updateDoc(docRef, {
-                                status: "delivered",
-                                artUrl: url,
-                            });
-                            console.log(url);
+                            if (requestId) {
+                                const reqRef = doc(db, "user-request", `/${requestId}`);
+                                await updateDoc(reqRef, {
+                                    status: "delivered",
+                                    artUrl: url,
+                                });
+                            } else {
+                                const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+                                await updateDoc(docRef, {
+                                    artId: arrayUnion(url),
+                                });
+                                console.log(url);
+                            }
                         })
                         .catch((error) => console.log(error.message));
                 })

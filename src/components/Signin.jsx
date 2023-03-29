@@ -42,9 +42,10 @@ const Signin = () => {
                         <label>password</label>
                         <input onChange={(e) => setPassword(e.target.value)} className="border-b-2 border-black" type="password" required></input>
                     </div>
+                    <Link to="/iforgor">forgot password?</Link>
+                    <br />
                     <button>sign in</button>
                 </form>
-                <Link to="/iforgor">forgot password?</Link>
                 <div id="error-validation"></div>
             </div>
         </div>

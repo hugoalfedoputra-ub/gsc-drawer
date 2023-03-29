@@ -1,61 +1,61 @@
-import { collection, doc, getDocs, getFirestore, limit, query, where } from "firebase/firestore";
+import { collection, doc, getDocs, getFirestore, limit, onSnapshot, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Artists = () => {
     // this function below reloads the window once to alleviate issue where artist name cant be clicked
     // (previous fix was to require the user to refresh page themselves)
-    window.onload = function () {
-        if (!window.location.hash) {
-            window.location = window.location + "#fresh";
-            window.location.reload();
-        }
-    };
-
-    window.onload();
+    // window.onload = function () {
+    //     if (!window.location.hash) {
+    //         window.location = window.location + "#fresh";
+    //         window.location.reload();
+    //     }
+    // };
+    // window.onload();
 
     const [data, setData] = useState([]);
+
+    const navigate = useNavigate();
 
     const db = getFirestore();
     const colRef = collection(db, "individual-user-page");
     const q = query(colRef, where("openRequest", "==", true), limit(20));
 
-    const getArtist = useCallback(async () => {
-        const querySnapshot = await getDocs(q);
-        const userData = [];
-        querySnapshot.forEach((doc) => {
-            userData.push(doc.data().userId.disnameId);
-            setData(userData);
-            // console.log(data);
-            // setData(doc.data().userId.disnameId);
-            // console.log(doc.data());
-        });
-        console.log(userData);
-    });
-
-    const inject = () => {
-        console.log("loading artists...");
-        document.getElementById("artist-map").innerHTML =
-            "<ul>" +
-            data
-                .map((data) => {
-                    return '<a href="/user/' + data + '">' + data + "</a>";
-                })
-                .join(" ") +
-            "</ul>";
-    };
-
     useEffect(() => {
-        getArtist();
+        const unsub = onSnapshot(q, (querySnapshot) => {
+            const userData = [];
+            querySnapshot.forEach((doc) => {
+                userData.push({ id: doc.id, userId: doc.data().userId, profilePic: doc.data().profilePicture });
+                setData(userData);
+            });
+            console.log(userData);
+        });
+        return () => {
+            unsub();
+        };
     }, []);
 
-    useEffect(() => {
-        inject();
-    }, [getArtist]);
+    const ArtistPanel = ({ response }) => {
+        return (
+            <>
+                <div className="card rounded-none h-[140px] bg-white border-2">
+                    <figure className="h-[100px]">
+                        <img src={response.profilePic} alt="profile" className=" avatar rounded-full object-cover h-12 w-12"></img>
+                    </figure>
+                    <div className="card-body p-0">
+                        <div className="cursor-pointer flex items-center justify-center" onClick={() => navigate("/user/" + response.userId)}>
+                            {response.userId}
+                        </div>
+                    </div>
+                </div>
+            </>
+        );
+    };
 
     return (
         <div>
-            <div>hello artists</div>
-            <div id="artist-map"></div>
+            <br />
+            <div className="grid grid-cols-4 gap-4">{data && data.map((relevant) => <ArtistPanel key={relevant.id} response={relevant} />)}</div>
         </div>
     );
 };

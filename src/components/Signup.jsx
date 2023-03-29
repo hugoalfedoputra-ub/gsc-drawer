@@ -19,7 +19,7 @@ const Signup = () => {
     onSnapshot(collection(db, "individual-user-page"), (querySnapshot) => {
         const username = [];
         querySnapshot.forEach((doc) => {
-            username.push(doc.data().userId.disnameId);
+            username.push(doc.data().userId);
             usernameJoined = username.join().replaceAll(",", "");
         });
     });
@@ -40,7 +40,7 @@ const Signup = () => {
                 navigate("/discover/artworks");
             } catch (e) {
                 setError(e.message);
-                console.log(e.message);
+                console.log(error);
             }
         }
     };

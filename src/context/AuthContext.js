@@ -17,9 +17,12 @@ export const AuthContextProvider = ({ children }) => {
         try {
             await createUserWithEmailAndPassword(auth, email, password).then((cred) => {
                 return setDoc(doc(db, "individual-user-page", cred.user.uid), {
-                    userId: { disnameId },
-                    openRequest: false,
+                    userId: disnameId,
+                    profilePicture:
+                        "https://firebasestorage.googleapis.com/v0/b/drawer-webapp.appspot.com/o/profile-pic%2Fdefaultuserprofile.png?alt=media&token=e5a883c0-55e0-4007-b129-463d4ca6f32d",
                     artId: arrayUnion("foo"),
+                    minPrice: 150000,
+                    openRequest: false,
                 });
             });
             await updateProfile(auth.currentUser, { displayName: disname }).catch((e) => {

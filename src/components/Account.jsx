@@ -1,6 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { arrayUnion, doc, getDoc, getFirestore, updateDoc } from "firebase/firestore";
-import { ref, uploadBytes } from "firebase/storage";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
@@ -12,6 +12,7 @@ const Account = () => {
     const [open, isOpen] = useState();
     const [checkOpen, setCheckOpen] = useState();
     const [profilePicture, setProfilePicture] = useState();
+    const [minPrice, setMinPrice] = useState();
 
     const db = getFirestore();
     const auth = getAuth();
@@ -22,7 +23,6 @@ const Account = () => {
         if (user) {
             openRequestStatus = await (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data().openRequest;
             setCheckOpen(openRequestStatus);
-            console.log(openRequestStatus);
         } else {
             console.log("userless");
         }
@@ -48,9 +48,17 @@ const Account = () => {
 
     const RequestButton = ({ isItOpen }) => {
         if (isItOpen === true) {
-            return <button onClick={() => handleOpenRequest()}>close request</button>;
+            return (
+                <button className="btn btn-outline font-segoe border-2 border-solid border-black" onClick={() => handleOpenRequest()}>
+                    close request
+                </button>
+            );
         } else if (isItOpen === false) {
-            return <button onClick={() => handleOpenRequest()}>open request</button>;
+            return (
+                <button className="btn btn-primary font-segoe border-2 border-solid border-black" onClick={() => handleOpenRequest()}>
+                    open request
+                </button>
+            );
         }
     };
 
@@ -64,46 +72,104 @@ const Account = () => {
         }
     };
 
-    const handleUploadProfilePicture = (event) => {
-        document.addEventListener("submit", (e) => e.preventDefault());
+    const handleUploadProfilePicture = () => {
+        window.addEventListener("submit", (e) => e.preventDefault());
         if (profilePicture != null) {
             const date = new Date();
             const imageRef = ref(storage, `profile-pic/${date.getTime()}`);
             uploadBytes(imageRef, profilePicture)
                 .then(async () => {
-                    const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
-                    await updateDoc(docRef, {
-                        profilePicture: date.getTime().toString(),
+                    const docRef = await doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+                    await getDownloadURL(imageRef).then(async (url) => {
+                        await updateDoc(docRef, {
+                            profilePicture: url,
+                        });
+                        console.log("success!");
                     });
                 })
-                .catch((error) => console.log(error.message));
+                .catch((error) => console.log(error.message))
+                .then(setProfilePicture(null));
+        }
+    };
+
+    const handleMinimumPrice = async (e) => {
+        window.addEventListener("submit", (e) => e.preventDefault());
+        const docRef = doc(db, "individual-user-page", `/${getAuth().currentUser.uid}`);
+        if (minPrice != null) {
+            await updateDoc(docRef, {
+                minPrice: minPrice,
+            }).then(setMinPrice(null));
         }
     };
 
     return (
         <div>
             <Navbar />
-            <div>
-                <div className="flex flex-row justify-between">
-                    <h1 className="text-3xl font-bold">settings</h1>
-                </div>
-                <p>user email: {user && user.email} </p>
-                <p>display name: {user && user.displayName}</p>
-                <div>{<RequestButton isItOpen={checkOpen} />}</div>
-                <form onSubmit={() => handleUploadProfilePicture()}>
-                    <label>upload profile picture</label>
-                    <input
-                        onChange={(e) => {
+            <div className="fixed ml-4 bg-clip-border bg-white z-10">
+                <h1 className="text-3xl font-bold font-segoe px-1">settings</h1>
+            </div>
+            <div className="font-segoe z-0">
+                <div className="border-solid border-black border-2 rounded-3xl mt-5 p-6">
+                    <div className="flex flex-row">
+                        <p className="basis-[30%]">user email</p>
+                        <p>{user && user.email}</p>
+                    </div>
+                    <div className="flex flex-row pb-2">
+                        <p className="basis-[30%]">display name</p>
+                        <p>{user && user.displayName}</p>
+                    </div>
+                    <div className="flex flex-row">
+                        <div className="basis-[30%] flex items-center">client requests</div>
+                        <div>{<RequestButton isItOpen={checkOpen} />}</div>
+                    </div>
+
+                    <form
+                        className="flex flex-col"
+                        onSubmit={(e) => {
                             e.preventDefault();
-                            setProfilePicture(e.target.files[0]);
+                            handleUploadProfilePicture();
+                            handleMinimumPrice();
                         }}
-                        type="file"
-                        accept="image/png, image/jpeg, image/jpg"
-                    ></input>
-                    <button>upload image</button>
-                </form>
+                    >
+                        <div className="flex flex-row py-2">
+                            <label className="basis-[30%] ">minimum asking price</label>
+                            <input
+                                className="border-b-2 border-solid border-black"
+                                type="number"
+                                min="150000"
+                                max="25000000"
+                                onChange={(e) => {
+                                    e.preventDefault();
+                                    setMinPrice(e.target.value);
+                                }}
+                            ></input>
+                        </div>
+                        <div className="flex flex-row">
+                            <label className="basis-[30%] flex items-center">upload profile picture</label>
+                            <input
+                                onChange={(e) => {
+                                    setProfilePicture(e.target.files[0]);
+                                }}
+                                type="file"
+                                accept="image/png, image/jpeg, image/jpg"
+                                id="upload"
+                                hidden
+                            ></input>
+                            <label for="upload" className="btn btn-primary border-2 border-solid border-black">
+                                browse...
+                            </label>
+                        </div>
+                        <br />
+                        <div className="flex justify-end">
+                            <button className="btn btn-primary font-segoe border-2 border-solid border-black">save settings!</button>
+                        </div>
+                    </form>
+                </div>
+
                 <br />
-                <button onClick={() => handleLogout()}>logout</button>
+                <button className="btn btn-outline font-segoe border-2 border-solid border-black" onClick={() => handleLogout()}>
+                    logout
+                </button>
             </div>
         </div>
     );

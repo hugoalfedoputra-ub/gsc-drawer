@@ -1,7 +1,10 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { collection, doc, getDoc, getDocs, getFirestore, onSnapshot, query, setDoc } from "firebase/firestore";
+import { getDownloadURL, ref } from "firebase/storage";
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { UserAuth } from "../context/AuthContext";
+import { storage } from "../firebase";
 
 const NewRequest = () => {
     const [amount, setAmount] = useState("");
@@ -10,6 +13,8 @@ const NewRequest = () => {
     const [clientName, setClientName] = useState("");
     const [artistName, setArtistName] = useState("");
     const [receiver, setReceiver] = useState("");
+    const [profilePicture, setProfilePicture] = useState();
+    const [minPrice, setMinPrice] = useState();
 
     const [error, setError] = useState("");
 
@@ -18,22 +23,32 @@ const NewRequest = () => {
     const colRef = collection(db, "individual-user-page");
 
     let { userId } = useParams();
+    const requestor = UserAuth().user.displayName;
     // console.log(userId);
 
     getDocs(colRef).then((snapshot) => {
         let content = [];
-
+        let userData = [];
         let uid = [];
         snapshot.docs.forEach((doc) => {
             uid.push({ uid: doc.id });
             content.push({ id: doc.data().userId });
+            userData.push({ profilePic: doc.data().profilePicture, minPrice: doc.data().minPrice });
 
             const temp = content.pop();
             const tempUid = uid.pop();
 
-            if (temp.id.disnameId === userId) {
+            if (temp.id === userId) {
                 setArtistName(userId);
                 setReceiver(tempUid.uid);
+                // console.log(userData.profilePic);
+                // const imageRef = ref(storage, "profile-pic/" + userData.profilePicture);
+                // getDownloadURL(imageRef)
+                //     .then((url) => {
+                //         setProfilePicture(url);
+                //     })
+                //     .catch((error) => console.log(error.message));
+                setMinPrice(userData.minPrice);
             }
         });
     });
@@ -114,55 +129,83 @@ const NewRequest = () => {
 
     return (
         <>
-            <div className="font-bold text-3xl" id="loading"></div>
-            <Link to="/discover/artists">ret</Link>
-            <div className="font-bold text-3xl">hello new request</div>
-            <div>for user: {userId}</div>
+            <div className="font-segoe">
+                <div className="font-bold text-3xl" id="loading"></div>
+                <Link to="/discover/artists">ret</Link>
+                <div className="font-bold text-3xl">submit a new request!</div>
+                <div>provide information for your request here.</div>
 
-            <form className="flex flex-col">
-                <div className="flex flex-row">
-                    <label className="basis-[20%]">Amount</label>
-                    <input
-                        id="price"
-                        className="basis-[80%] border-b-2 border-black"
-                        onChange={(e) => setAmount(e.target.value.replaceAll("[^1234567890]", ""))}
-                        type="number"
-                        min="150000"
-                        max="25000000"
-                        required
-                    ></input>
+                <div className="card card-bordered">
+                    <figure>
+                        <img src={profilePicture} alt="profile"></img>
+                    </figure>
+                    <div className="card-body">{userId}</div>
                 </div>
-                <div className="flex flex-row">
-                    <label className="basis-[20%]">Description</label>
-                    <textarea
-                        className="basis-[80%] border-b-2 border-black"
-                        onChange={(e) => setDescription(e.target.value)}
-                        type="text"
-                        rows="3"
-                        cols="40"
-                        required
-                    ></textarea>
-                </div>
-                <div className="flex flex-row">
-                    <label className="basis-[20%]">Reference URL</label>
-                    <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setRefUrl(e.target.value)} type="text" required></input>
-                </div>
-                <div className="flex flex-row">
-                    <label className="basis-[20%]">Client name</label>
-                    <input
-                        className="basis-[80%] border-b-2 border-black"
-                        onChange={(e) => setClientName(e.target.value)}
-                        type="text"
-                        defaultValue="Anonymous"
-                        required
-                    ></input>
-                </div>
-                <div id="error-validation"></div>
-                Important notice handle here
-                <button type="submit" onClick={() => handleSubmit()}>
-                    request artwork
-                </button>
-            </form>
+
+                <form className="flex flex-col">
+                    <div className="flex flex-row">
+                        <label className="basis-[20%]">Amount</label>
+                        <input
+                            id="price"
+                            className="basis-[80%] border-b-2 border-black"
+                            onChange={(e) => setAmount(e.target.value)}
+                            type="number"
+                            min={minPrice || "150000"}
+                            max="25000000"
+                            required
+                        ></input>
+                    </div>
+                    <div className="flex flex-row">
+                        <label className="basis-[20%]">Description</label>
+                        <textarea
+                            className="basis-[80%] border-b-2 border-black"
+                            onChange={(e) => setDescription(e.target.value)}
+                            type="text"
+                            rows="3"
+                            cols="40"
+                            required
+                        ></textarea>
+                    </div>
+                    <div className="flex flex-row">
+                        <label className="basis-[20%]">Reference URL</label>
+                        <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setRefUrl(e.target.value)} type="text" required></input>
+                    </div>
+                    <div className="flex flex-row">
+                        <label className="basis-[20%]">Client name</label>
+                        <button
+                            id="anon"
+                            className="btn btn-outline rounded-3xl"
+                            onClick={() => {
+                                window.addEventListener("click", (e) => e.preventDefault());
+                                setClientName("Anonymous");
+                                document.getElementById("user").classList.remove("btn-active");
+                                document.getElementById("anon").classList.add("btn-active");
+                            }}
+                        >
+                            Anonymous
+                        </button>
+                        <button
+                            id="user"
+                            className="btn btn-outline rounded-3xl"
+                            onClick={() => {
+                                window.addEventListener("click", (e) => e.preventDefault());
+                                setClientName(requestor);
+                                document.getElementById("anon").classList.remove("btn-active");
+                                document.getElementById("user").classList.add("btn-active");
+                            }}
+                        >
+                            {requestor}
+                        </button>
+                    </div>
+                    <div id="error-validation"></div>
+                    Important notice handle here
+                    <div className="flex items-center justify-center">
+                        <button className="btn btn-primary btn-md rounded-3xl" type="submit" onClick={() => handleSubmit()}>
+                            request!
+                        </button>
+                    </div>
+                </form>
+            </div>
         </>
     );
 };
