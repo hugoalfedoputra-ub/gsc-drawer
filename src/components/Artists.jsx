@@ -43,8 +43,8 @@ const Artists = () => {
                         <img src={response.profilePic} alt="profile" className=" avatar rounded-full object-cover h-12 w-12"></img>
                     </figure>
                     <div className="card-body p-0">
-                        <div className="cursor-pointer flex items-center justify-center" onClick={() => navigate("/user/" + response.userId)}>
-                            {response.userId}
+                        <div className="cursor-pointer flex items-center justify-center underline" onClick={() => navigate("/user/" + response.userId)}>
+                            @{response.userId}
                         </div>
                     </div>
                 </div>
