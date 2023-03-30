@@ -103,7 +103,7 @@ const Account = () => {
     };
 
     return (
-        <div>
+        <div className="mx-24 my-10">
             <Navbar />
             <div className="fixed ml-4 bg-clip-border bg-white z-10">
                 <h1 className="text-3xl font-bold font-segoe px-1">settings</h1>
