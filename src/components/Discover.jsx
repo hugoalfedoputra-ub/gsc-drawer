@@ -27,12 +27,12 @@ const Discover = () => {
     };
 
     return (
-        <div>
+        <div className="mx-24 my-10">
             <Navbar />
             <div className="flex flex-row font-segoe">
                 <div
                     id="artwork"
-                    className="cursor-pointer mr-4"
+                    className="cursor-pointer mr-4 text-xl"
                     onClick={() => {
                         isArtwork.current = true;
                         isArtist.current = false;
@@ -44,7 +44,7 @@ const Discover = () => {
                 </div>
                 <div
                     id="artist"
-                    className="cursor-pointer mr-4"
+                    className="cursor-pointer mr-4 text-xl"
                     onClick={() => {
                         isArtist.current = true;
                         isArtwork.current = false;

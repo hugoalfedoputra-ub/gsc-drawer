@@ -35,20 +35,17 @@ const NewRequest = () => {
             content.push({ id: doc.data().userId });
             userData.push({ profilePic: doc.data().profilePicture, minPrice: doc.data().minPrice });
 
+            console.log(userData);
             const temp = content.pop();
+            const tempUser = userData.pop();
             const tempUid = uid.pop();
 
             if (temp.id === userId) {
+                console.log(temp.id);
                 setArtistName(userId);
                 setReceiver(tempUid.uid);
-                // console.log(userData.profilePic);
-                // const imageRef = ref(storage, "profile-pic/" + userData.profilePicture);
-                // getDownloadURL(imageRef)
-                //     .then((url) => {
-                //         setProfilePicture(url);
-                //     })
-                //     .catch((error) => console.log(error.message));
-                setMinPrice(userData.minPrice);
+                setMinPrice(tempUser.minPrice);
+                setProfilePicture(tempUser.profilePic);
             }
         });
     });
@@ -109,7 +106,8 @@ const NewRequest = () => {
                     docRef,
                     (querySnapshot) => {
                         console.log("loading...");
-                        document.getElementById("loading").innerHTML = "loading...";
+                        document.getElementById("loading").classList.add("p-4");
+                        document.getElementById("loading").innerHTML = "your request is being processed, please hold...";
                         if (querySnapshot.data().status !== "pending") {
                             linkie = querySnapshot.data().pyLink;
                             console.log(linkie);
@@ -129,82 +127,115 @@ const NewRequest = () => {
 
     return (
         <>
-            <div className="font-segoe">
-                <div className="font-bold text-3xl" id="loading"></div>
-                <Link to="/discover/artists">ret</Link>
-                <div className="font-bold text-3xl">submit a new request!</div>
-                <div>provide information for your request here.</div>
+            <div className="mx-24 my-10">
+                <div className="font-segoe">
+                    <div className="text-white bg-warning mb-4 rounded-lg font-bold" id="loading"></div>
+                    <div className="flex flex-row justify-between">
+                        <div>
+                            <div className="font-bold text-3xl">submit a new request!</div>
+                            <div>provide information for your request here.</div>
+                        </div>
 
-                <div className="card card-bordered">
-                    <figure>
-                        <img src={profilePicture} alt="profile"></img>
-                    </figure>
-                    <div className="card-body">{userId}</div>
+                        <Link className="btn btn-outline" to="/discover/artists">
+                            cancel
+                        </Link>
+                    </div>
+
+                    <br />
+
+                    <div className="flex flex-row">
+                        <div className="card card-bordered min-w-[20%] max-w-[25%] max-h-[150px] mr-6 bg-primary text-white font-bold font-montserrat">
+                            <figure className="h-[100px]">
+                                <img className="h-12 w-12 flex justify-center object-cover rounded-full" src={profilePicture} alt="profile"></img>
+                            </figure>
+                            <div className="card-body flex items-center justify-center max-h-[50px] pt-2">{userId}</div>
+                        </div>
+
+                        <form className="flex flex-col min-w-[75%] max-w-[80%] pl-10">
+                            <div className="flex flex-row pb-4">
+                                <label className="basis-[20%]">Amount</label>
+                                <input
+                                    id="price"
+                                    className="basis-[80%] border-b-2 border-black"
+                                    onChange={(e) => setAmount(e.target.value)}
+                                    type="number"
+                                    min={minPrice || "150000"}
+                                    max="25000000"
+                                    required
+                                ></input>
+                            </div>
+                            <div className="flex flex-row pb-4">
+                                <label className="basis-[20%]">Description</label>
+                                <textarea
+                                    className="basis-[80%] border-b-2 border-black"
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    type="text"
+                                    rows="3"
+                                    cols="40"
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="flex flex-row pb-4">
+                                <label className="basis-[20%]">Reference URL</label>
+                                <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setRefUrl(e.target.value)} type="text" required></input>
+                            </div>
+                            <div className="flex flex-row pb-4">
+                                <label className="basis-[20%]">Client name</label>
+                                <button
+                                    id="anon"
+                                    className="btn btn-outline mr-4"
+                                    onClick={() => {
+                                        window.addEventListener("click", (e) => e.preventDefault());
+                                        setClientName("Anonymous");
+                                        document.getElementById("user").classList.remove("btn-active");
+                                        document.getElementById("anon").classList.add("btn-active");
+                                    }}
+                                >
+                                    Anonymous
+                                </button>
+                                <button
+                                    id="user"
+                                    className="btn btn-outline"
+                                    onClick={() => {
+                                        window.addEventListener("click", (e) => e.preventDefault());
+                                        setClientName(requestor);
+                                        document.getElementById("anon").classList.remove("btn-active");
+                                        document.getElementById("user").classList.add("btn-active");
+                                    }}
+                                >
+                                    {requestor}
+                                </button>
+                            </div>
+                            <div id="error-validation"></div>
+                            <div className="flex flex-row">
+                                <div className="basis-[20%] flex-none">Important Notice</div>
+                                <ul className=" list-decimal ml-4">
+                                    <li>The artist and the client are prohibited from communicating or making contact outside of this platform.</li>
+                                    <li>It is prohibited for client to specify and/or urge deadline.</li>
+                                    <li>Note that the final product's copyright belong to the artist.</li>
+                                    <li>
+                                        Artist is not obliged to follow any instructions regarding character, composition, resolution, differentiation, file format, etc.
+                                        imposed by the client
+                                    </li>
+                                    <li>Client cannot object regarding the quality of finished work.</li>
+                                    <li>
+                                        As a client, you may leave feedback for the artist after the product is delivered to you. You can do so via our in-app chat
+                                        platform.
+                                    </li>
+                                    <li>
+                                        By accepting this request, I agree to the <span className="cursor-pointer underline">terms and conditions</span> of Drawer.
+                                    </li>
+                                </ul>
+                            </div>
+                            <br />
+                            <div className="flex items-center justify-center">
+                                <button className="btn btn-primary btn-md" type="submit" onClick={() => handleSubmit()}>
+                                    request!
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-
-                <form className="flex flex-col">
-                    <div className="flex flex-row">
-                        <label className="basis-[20%]">Amount</label>
-                        <input
-                            id="price"
-                            className="basis-[80%] border-b-2 border-black"
-                            onChange={(e) => setAmount(e.target.value)}
-                            type="number"
-                            min={minPrice || "150000"}
-                            max="25000000"
-                            required
-                        ></input>
-                    </div>
-                    <div className="flex flex-row">
-                        <label className="basis-[20%]">Description</label>
-                        <textarea
-                            className="basis-[80%] border-b-2 border-black"
-                            onChange={(e) => setDescription(e.target.value)}
-                            type="text"
-                            rows="3"
-                            cols="40"
-                            required
-                        ></textarea>
-                    </div>
-                    <div className="flex flex-row">
-                        <label className="basis-[20%]">Reference URL</label>
-                        <input className="basis-[80%] border-b-2 border-black" onChange={(e) => setRefUrl(e.target.value)} type="text" required></input>
-                    </div>
-                    <div className="flex flex-row">
-                        <label className="basis-[20%]">Client name</label>
-                        <button
-                            id="anon"
-                            className="btn btn-outline rounded-3xl"
-                            onClick={() => {
-                                window.addEventListener("click", (e) => e.preventDefault());
-                                setClientName("Anonymous");
-                                document.getElementById("user").classList.remove("btn-active");
-                                document.getElementById("anon").classList.add("btn-active");
-                            }}
-                        >
-                            Anonymous
-                        </button>
-                        <button
-                            id="user"
-                            className="btn btn-outline rounded-3xl"
-                            onClick={() => {
-                                window.addEventListener("click", (e) => e.preventDefault());
-                                setClientName(requestor);
-                                document.getElementById("anon").classList.remove("btn-active");
-                                document.getElementById("user").classList.add("btn-active");
-                            }}
-                        >
-                            {requestor}
-                        </button>
-                    </div>
-                    <div id="error-validation"></div>
-                    Important notice handle here
-                    <div className="flex items-center justify-center">
-                        <button className="btn btn-primary btn-md rounded-3xl" type="submit" onClick={() => handleSubmit()}>
-                            request!
-                        </button>
-                    </div>
-                </form>
             </div>
         </>
     );

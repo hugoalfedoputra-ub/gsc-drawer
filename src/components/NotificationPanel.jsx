@@ -41,12 +41,12 @@ const NotificationPanel = () => {
                         console.log("inbound notification!!!");
                         document.getElementById("inbound-notif").innerHTML = "";
                         document.getElementById("inbound-notif").innerHTML +=
-                            '<div class="border-t-2 border-solid border-black">' +
+                            '<div class="">' +
                             "<div>" +
                             moment(parseInt(content[i].id.toString().substring(4))).format("DD-MM-YYYY") +
                             "</div>" +
                             "<div>new inbound request</div>" +
-                            '<a href="/request/' +
+                            '<a class="btn btn-primary mb-2" href="/request/' +
                             content[i].id +
                             '">open</a>' +
                             "</div>";

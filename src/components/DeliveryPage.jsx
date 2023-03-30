@@ -2,16 +2,18 @@ import { getAuth } from "firebase/auth";
 import { arrayUnion, doc, getFirestore, updateDoc } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { storage } from "../firebase";
 
-const SubmissionPage = () => {
+const DeliveryPage = () => {
     let { requestId } = useParams();
 
     const [imageUpload, setImageUpload] = useState(null);
     const [isFinished, setIsFinished] = useState(false);
 
     const db = getFirestore();
+
+    const navigate = useNavigate();
 
     const handleSubmission = () => {
         document.addEventListener("submit", (e) => {
@@ -55,7 +57,7 @@ const SubmissionPage = () => {
     return (
         <>
             <form className="font-segoe m-4">
-                <div className="font-bold text-xl">upload your artwork!</div>
+                <div className="font-bold text-xl">deliver artwork to your client!</div>
                 <div className="mb-4" id="loading"></div>
                 <div className="flex flex-row justify-between">
                     <input
@@ -70,7 +72,13 @@ const SubmissionPage = () => {
                     </label>
 
                     <label className="btn btn-primary mb-4 modal-action mt-0" onClick={() => handleSubmission()}>
-                        {isFinished ? <label htmlFor="add">im finished!</label> : <span>upload artwork</span>}
+                        {isFinished ? (
+                            <div onClick={() => navigate("/discover/artworks")} className="btn btn-primary">
+                                i'm finished!
+                            </div>
+                        ) : (
+                            <span>upload artwork</span>
+                        )}
                     </label>
                 </div>
                 <div className="flex flex-row modal-action mt-0 justify-start">
@@ -83,7 +91,7 @@ const SubmissionPage = () => {
                     >
                         refresh
                     </label>
-                    <label htmlFor="add" className="btn btn-outline">
+                    <label htmlFor="deliver" className="btn btn-outline">
                         nevermind
                     </label>
                 </div>
@@ -92,4 +100,4 @@ const SubmissionPage = () => {
     );
 };
 
-export default SubmissionPage;
+export default DeliveryPage;

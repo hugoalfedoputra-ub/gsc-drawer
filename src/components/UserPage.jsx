@@ -1,7 +1,4 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { collection, doc, getDoc, getDocs, getFirestore, limit, onSnapshot, query } from "firebase/firestore";
-import { getDownloadURL, ref } from "firebase/storage";
-import { storage } from "../firebase";
+import { collection, getFirestore, limit, onSnapshot, query } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Navbar from "./Navbar";
@@ -19,7 +16,6 @@ const UserPage = () => {
     let { userId } = useParams();
 
     const db = getFirestore();
-    const colRef = collection(db, "individual-user-page");
 
     const [artCard, setArtCard] = useState(new Map());
     const q = query(collection(db, "individual-user-page"), limit(100));
@@ -30,7 +26,6 @@ const UserPage = () => {
 
     let content = [];
     let artworks = [];
-    let allArtworks = [];
 
     console.log(UserAuth().user.displayName);
     const currentUser = UserAuth().user.displayName;
@@ -43,44 +38,28 @@ const UserPage = () => {
         const unsub = onSnapshot(q, (querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 if (doc.data().userId === userId) {
-                    content.push({ artId: doc.data().artId, userId: doc.data().userId, openRequest: doc.data().openRequest });
+                    content.push({ userId: doc.data().userId, openRequest: doc.data().openRequest });
                     if (doc.data().openRequest === true && currentUser !== userId) {
-                        document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
+                        document.getElementById("check-request").innerHTML = '<button id="new-request">NEW REQUEST</button>';
                         var newRequestButton = document.getElementById("new-request");
                         newRequestButton.addEventListener("click", async () => {
                             console.log("making a new request...");
                             window.location.href = "/user/" + userId + "/new";
                         });
                     } else if (currentUser === userId) {
-                        document.getElementById("check-request").innerHTML = "this is you";
+                        document.getElementById("check-request").innerHTML = "THIS IS YOU";
                     } else if (doc.data().openRequest === false) {
-                        document.getElementById("check-request").innerHTML = "requests closed. come again soon!";
+                        document.getElementById("check-request").innerHTML = "CLOSED";
                     }
                     // inject straight to div via id because i cant think of any other way
                     document.getElementById("content").innerHTML = userId;
-                }
-                console.log(content);
-                for (let i = 0; i < content.length; i++) {
-                    artworks.push(content[i].artId);
-                }
-                for (let i = 0; i < artworks.length; i++) {
-                    for (let j = 0; j < artworks[i].length; j++) {
-                        if (artworks[i][j] !== "foo") {
-                            allArtworks.push(artworks[i][j]);
+
+                    artworks.push({ artId: doc.data().artId });
+                    for (let i = 0; i < artworks[0].artId.length; i++) {
+                        if (artworks[0].artId[i] !== "foo") {
+                            updateMap(i, artworks[0].artId[i]);
                         }
                     }
-                }
-                for (let i = 0; i < allArtworks.length; i++) {
-                    let temp = [];
-                    temp = allArtworks[i].split("+", 2); // there will be an edge case where a user inputs "+" in their title
-
-                    const imageRef = ref(storage, "artwork/" + temp[0]);
-                    console.log(imageRef);
-                    getDownloadURL(imageRef)
-                        .then((url) => {
-                            updateMap(temp[0], { title: temp[1], artUrl: url });
-                        })
-                        .catch((error) => console.log(error.message));
                 }
             });
         });
@@ -92,63 +71,36 @@ const UserPage = () => {
     const PersonalArtworkPanel = ({ response }) => {
         return (
             <>
-                <div className="flex flex-col">
-                    <div>
-                        <div>{response.title ? response.title : "no_title"}</div>
-                        <img className="h-12 w-12" src={response.artUrl} alt="" />
-                    </div>
+                <div className="card rounded-none h-[200px] bg-base-100 font-segoe">
+                    <figure>
+                        <img className="object-cover h-[200px] " src={response} alt="" />
+                    </figure>
                 </div>
             </>
         );
     };
 
-    // const auth = getAuth();
-    // onAuthStateChanged(auth, async (user) => {
-    //     if (user) {
-    //         let userInfo = (await getDoc(doc(db, "individual-user-page", getAuth().currentUser.uid))).data();
-    //         await getDocs(colRef).then((snapshot) => {
-    //             let content = [];
-    //             let openRequest = [];
-    //             snapshot.docs.forEach((doc) => {
-    //                 content.push({ id: doc.data().userId });
-    //                 openRequest.push({ openRequest: doc.data().openRequest });
-    //                 const temp = content.pop();
-    //                 const tempOpenRequest = openRequest.pop();
-    //                 if (temp.id === userId) {
-    //                     if (tempOpenRequest.openRequest === true && userInfo.userId !== temp.id) {
-    //                         document.getElementById("check-request").innerHTML = '<button id="new-request">new request</button>';
-    //                         var newRequestButton = document.getElementById("new-request");
-    //                         newRequestButton.addEventListener("click", async () => {
-    //                             console.log("making a new request...");
-    //                             window.location.href = "/user/" + userId + "/new";
-    //                         });
-    //                     } else if (userInfo.userId === temp.id) {
-    //                         document.getElementById("check-request").innerHTML = "this is you";
-    //                     } else {
-    //                         document.getElementById("check-request").innerHTML = "closed";
-    //                     }
-    //                     // inject straight to div via id because i cant think of any other way
-    //                     document.getElementById("content").innerHTML = temp.id;
-    //                 }
-    //             });
-    //         });
-    //     } else {
-    //         console.log("userless");
-    //     }
-    // });
-
     return (
         <>
-            <Navbar />
-            <div className="flex flex-row justify-between">
-                <div id="content" className="text-3xl font-bold"></div>
-            </div>
-            <div className="flex flex-row">
-                <div className="basis-[25%]" id="check-request"></div>
-                <div className="basis-[75%]" id="make-new-request">
-                    {Array.from(artCard).map(([key, value]) => (
-                        <PersonalArtworkPanel key={key} response={value} />
-                    ))}
+            <div>
+                <div className="mx-24 my-10">
+                    <Navbar />
+                    <div className="font-segoe">
+                        <div className="flex flex-row justify-between">
+                            <div id="content" className="text-3xl font-bold"></div>
+                        </div>
+                        <br />
+                        <div className="flex flex-row">
+                            <div className="basis-[15%] btn btn-primary cursor-default mr-8" id="check-request"></div>
+                            <div className="basis-[85%]" id="make-new-request">
+                                <div className="grid grid-cols-4 gap-4">
+                                    {Array.from(artCard).map(([key, value]) => (
+                                        <PersonalArtworkPanel key={key} response={value} />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </>

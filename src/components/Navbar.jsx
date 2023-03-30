@@ -7,6 +7,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { UserAuth } from "../context/AuthContext";
 import { storage } from "../firebase";
 import NotificationPanel from "./NotificationPanel";
+import SubmissionPage from "./SubmissionPage";
 
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -104,7 +105,13 @@ const Navbar = () => {
     };
 
     return (
-        <div>
+        <>
+            <input type="checkbox" id="add" className="modal-toggle" />
+            <div className="modal">
+                <div className="modal-box">
+                    <SubmissionPage />
+                </div>
+            </div>
             <div className="flex">
                 <div className="flex-auto w-[80%]">
                     <h1 className="text-3xl font-bold">
@@ -114,14 +121,17 @@ const Navbar = () => {
 
                 <div className="flex-none">
                     <div className="flex flex-row justify-between">
-                        <button className="flex-none pl-6">
-                            <Link to="/submission">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">
-                                    <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
-                                    <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
-                                </svg>
-                            </Link>
+                        <button className="flex-none cursor-pointer">
+                            <label htmlFor="add">
+                                <div className="pr-[0.1rem] cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-plus-square" viewBox="0 0 16 16">
+                                        <path d="M14 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h12zM2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2z" />
+                                        <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z" />
+                                    </svg>
+                                </div>
+                            </label>
                         </button>
+
                         <button className="flex-none pl-6">
                             <Link to="/chat">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-chat" viewBox="0 0 16 16">
@@ -129,7 +139,8 @@ const Navbar = () => {
                                 </svg>
                             </Link>
                         </button>
-                        <div className="dropdown dropdown-bottom dropdown-end pl-5 flex-none">
+
+                        <div className="dropdown dropdown-bottom dropdown-end pl-6 pr-2 flex-none">
                             <label tabIndex={0} className="cursor-pointer">
                                 <div className="pt-[0.6rem]">
                                     <svg
@@ -173,7 +184,7 @@ const Navbar = () => {
                 </div>
             </div>
             <Notification open={isOpen} />
-        </div>
+        </>
     );
 };
 

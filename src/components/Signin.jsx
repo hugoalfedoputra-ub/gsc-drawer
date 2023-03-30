@@ -24,29 +24,52 @@ const Signin = () => {
     };
 
     return (
-        <div>
-            <h1 className="text-3xl font-bold">hello</h1>
-            <div>
-                <div>
-                    <h1>sign in to your account</h1>
-                    <p>
-                        dont have an account yet? <Link to="/signup">Sign up</Link>
-                    </p>
-                </div>
-                <form onSubmit={() => handleSubmit()}>
-                    <div>
-                        <label>email address</label>
-                        <input onChange={(e) => setEmail(e.target.value)} className="border-b-2 border-black" type="email" required></input>
+        <div className="hero min-h-screen font-segoe bg-primary">
+            <div className="hero-content flex flex-row">
+                <div className="w-[50vw] font-montserrat text-4xl text-white font-bold">Drawer.</div>
+                <div className="w-[250px] bg-white p-6 rounded-xl">
+                    <div className="flex flex-row justify-between">
+                        <div className="font-bold text-2xl">log in</div>
+                        <div className="flex items-center">
+                            or&nbsp;
+                            <Link to="/signup" className="underline">
+                                register
+                            </Link>
+                        </div>
                     </div>
-                    <div>
-                        <label>password</label>
-                        <input onChange={(e) => setPassword(e.target.value)} className="border-b-2 border-black" type="password" required></input>
-                    </div>
-                    <Link to="/iforgor">forgot password?</Link>
                     <br />
-                    <button>sign in</button>
-                </form>
-                <div id="error-validation"></div>
+                    <div id="error-validation" className=""></div>
+                    <form onSubmit={() => handleSubmit()} className="flex flex-col">
+                        <div>
+                            <label>email</label>
+                            <br />
+                            <input
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="border-2 border-black w-[202px] rounded-lg px-2 py-1"
+                                type="email"
+                                required
+                            ></input>
+                        </div>
+                        <div>
+                            <label>password</label>
+                            <br />
+                            <input
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="border-2 border-black w-[202px] rounded-lg px-2 py-1"
+                                type="password"
+                                required
+                            ></input>
+                        </div>
+                        <Link to="/iforgor" className="underline cursor-pointer">
+                            forgot password?
+                        </Link>
+                        <br />
+
+                        <div className="flex justify-end">
+                            <button className="flex justify-end btn btn-primary">log in</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     );

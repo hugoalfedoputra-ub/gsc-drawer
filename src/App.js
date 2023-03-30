@@ -17,7 +17,7 @@ import ForgotPassword from "./components/ForgotPassword";
 
 function App() {
     return (
-        <div className="App mx-24 my-10 z-0 font-montserrat">
+        <div className="App z-0 font-montserrat">
             {/* there are margins ^^here^^, remove in further development */}
             <AuthContextProvider>
                 <Routes>

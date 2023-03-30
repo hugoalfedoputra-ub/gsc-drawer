@@ -1,7 +1,6 @@
-import { collection, doc, getFirestore, limit, onSnapshot, query } from "firebase/firestore";
-import { getDownloadURL, ref } from "firebase/storage";
+import { collection, getFirestore, limit, onSnapshot, query } from "firebase/firestore";
 import React, { useEffect, useState } from "react";
-import { storage } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 const Artworks = () => {
     // console.log(UserAuth());
@@ -11,65 +10,40 @@ const Artworks = () => {
 
     const [artCard, setArtCard] = useState(new Map());
 
+    const navigate = useNavigate();
+
     const updateMap = (k, v) => {
         setArtCard(new Map(artCard.set(k, v)));
     };
 
-    let content = [];
     let artworks = [];
     let profiles = [];
-    let nonfoos = [];
-    let allArtworks = [];
 
     useEffect(() => {
-        const unsub = onSnapshot(q, (querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                content.push({ artId: doc.data().artId });
-                console.log(content);
-            });
-            onSnapshot(colRef, (userDatas) => {
-                userDatas.forEach((doxx) => {
-                    profiles.push({
-                        id: doxx.id,
-                        artId: doxx.data().artId[doxx.data().artId.length - Math.ceil(doxx.data().artId.length / 10)],
-                        username: doxx.data().userId,
-                        profilePic: doxx.data().profilePicture,
-                    });
+        const unsub = onSnapshot(colRef, (userDatas) => {
+            userDatas.forEach((doxx) => {
+                artworks.push({ artId: doxx.data().artId });
+                profiles.push({
+                    id: doxx.id,
+                    artId: doxx.data().artId,
+                    artLen: doxx.data().artId.length,
+                    username: doxx.data().userId,
+                    profilePic: doxx.data().profilePicture,
                 });
-                for (let i = 0; i < profiles.length; i++) {
-                    if (profiles[i].artId !== "foo") {
-                        nonfoos.push(profiles[i]);
+            });
+
+            for (let h = 0; h < profiles.length; h++) {
+                let tempProfile = profiles[h];
+                if (profiles[h].artLen > 1) {
+                    console.log(tempProfile);
+                    for (let i = tempProfile.artId.length - 1 - Math.ceil(tempProfile.artId.length / 2); i < tempProfile.artId.length; i++) {
+                        if (tempProfile.artId[i] !== "foo") {
+                            console.log(tempProfile.artId[i]);
+                            updateMap(tempProfile.id + i.toString(), { url: tempProfile.artId[i], user: tempProfile.username, pfp: tempProfile.profilePic });
+                        }
                     }
                 }
-                for (let i = 0; i < nonfoos.length; i++) {
-                    updateMap(nonfoos[i].id, { url: nonfoos[i].artId, user: nonfoos[i].username, pfp: nonfoos[i].profilePic });
-                }
-                console.log(nonfoos);
-            });
-            // for (let i = 0; i < content.length; i++) {
-            //     artworks.push(content[i].artId);
-            // }
-
-            // for (let i = 0; i < artworks.length; i++) {
-            //     for (let j = artworks[i].length - Math.ceil(artworks[i].length / 10); j < artworks[i].length; j++) {
-            //         if (artworks[i][j] !== "foo") {
-            //             allArtworks.push(artworks[i][j]);
-            //             console.log(allArtworks);
-            //         }
-            //     }
-            // }
-            // for (let i = 0; i < allArtworks.length; i++) {
-            //     let temp = [];
-            //     temp = allArtworks[i].split("+", 2); // there will be an edge case where a user inputs "+" in their title
-
-            //     const imageRef = ref(storage, "artwork/" + temp[0]);
-            //     console.log(imageRef);
-            //     getDownloadURL(imageRef)
-            //         .then((url) => {
-            //             updateMap(temp[0], { title: temp[1], artUrl: url });
-            //         })
-            //         .catch((error) => console.log(error.message));
-            // }
+            }
         });
         return () => unsub();
     }, []);
@@ -79,11 +53,16 @@ const Artworks = () => {
             <>
                 <div className="card rounded-none h-[300px] bg-base-100 font-segoe">
                     <figure>
-                        <img className="object-fill h-[220px] " src={response.url} alt="" />
+                        <img className="object-cover h-[220px] " src={response.url} alt="" />
                     </figure>
                     <div className="card-body flex flex-row p-0">
-                        <img className="mt-2 avatar h-10 w-10 object-cover rounded-full" src={response.pfp} alt="profile" />
-                        <div className="mt-4">{response.user}</div>
+                        <img className="mt-5 avatar h-10 w-10 object-cover rounded-full" src={response.pfp} alt="profile" />
+                        <div
+                            className="font-montserrat font-bold cursor-pointer flex items-center justify-center hover:underline hover:bg-black transition-all ease-in-out bg-primary text-white my-6 px-2 rounded-lg"
+                            onClick={() => navigate("/user/" + response.user)}
+                        >
+                            @{response.user}
+                        </div>
                     </div>
                 </div>
             </>

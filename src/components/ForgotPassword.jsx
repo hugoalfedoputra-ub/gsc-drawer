@@ -16,15 +16,15 @@ const ForgotPassword = () => {
     };
     return (
         <>
-            <div>
-                <h1 className="text-3xl font-bold">so you forgot your password?</h1>
-                <div>
+            <div className="mx-24 my-10">
+                <h1 className="text-3xl font-bold font-montserrat">so you forgot your password?</h1>
+                <div className="font-segoe">
                     <form onSubmit={() => handleResetPassword()}>
-                        <div>
-                            <label>email address</label>
+                        <div className="flex flex-row py-2">
+                            <label className="basis-[20%]">email address</label>
                             <input onChange={(e) => setEmail(e.target.value)} className="border-b-2 border-black" type="email" required></input>
                         </div>
-                        <button>send reset password email</button>
+                        <button className="btn btn-primary">send reset password email</button>
                     </form>
                 </div>
             </div>

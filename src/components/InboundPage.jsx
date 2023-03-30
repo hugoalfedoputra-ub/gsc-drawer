@@ -58,39 +58,58 @@ const InboundPage = () => {
         return (
             <div className="flex flex-col">
                 <div className="flex flex-row">
-                    <div className="basis-[20%]">Amount</div>
+                    <div className="basis-[18%]">Amount</div>
                     <div className="basis-[80%]">{response.price}</div>
                 </div>
                 <div className="flex flex-row">
-                    <div className="basis-[20%]">Description</div>
+                    <div className="basis-[18%]">Description</div>
                     <div className="basis-[80%]">{response.desc}</div>
                 </div>
                 <div className="flex flex-row">
-                    <div className="basis-[20%]">Reference URL</div>
+                    <div className="basis-[18%]">Reference URL</div>
                     <div className="basis-[80%]">{response.ref}</div>
                 </div>
                 <div className="flex flex-row">
-                    <div className="basis-[20%]">Client name</div>
+                    <div className="basis-[18%]">Client name</div>
                     <div className="basis-[80%]">{response.clName}</div>
                 </div>
-                Important notice handle here
+                <div className="flex flex-row pt-3 pb-6">
+                    <div className="basis-[18%] flex-none">Important Notice</div>
+                    <ul className=" list-decimal ml-4">
+                        <li>The artist and the client are prohibited from communicating or making contact outside of this platform.</li>
+                        <li>It is prohibited for client to specify and/or urge deadline.</li>
+                        <li>Note that the final product's copyright belong to the artist.</li>
+                        <li>
+                            Artist is not obliged to follow any instructions regarding character, composition, resolution, differentiation, file format, etc. imposed by
+                            the client
+                        </li>
+                        <li>Client cannot object regarding the quality of finished work.</li>
+                        <li>As a client, you may leave feedback for the artist after the product is delivered to you. You can do so via our in-app chat platform.</li>
+                        <li>
+                            By accepting this request, I agree to the <span className="cursor-pointer underline">terms and conditions</span> of Drawer.
+                        </li>
+                    </ul>
+                </div>
             </div>
         );
     };
 
     return (
         <>
-            <Navbar />
-            <div className="font-bold text-3xl">new inbound request!</div>
-            <div>hello</div>
-            {message && message.map((relevant) => <ResponsePanel key={relevant.id} response={relevant} />)}
-            <div className="flex flex-row">
-                <button className="pr-4" type="submit" onClick={() => handleAccept()}>
-                    accept
-                </button>
-                <button className="pr-4" type="submit" onClick={() => handleReject()}>
-                    reject
-                </button>
+            <div className="mx-24 my-10">
+                <Navbar />
+                <div className="font-segoe border-2 border-solid border-black mt-2 p-4 rounded-xl">
+                    <div className="font-bold text-3xl pb-3">new inbound request!</div>
+                    {message && message.map((relevant) => <ResponsePanel key={relevant.id} response={relevant} />)}
+                    <div className="flex flex-row justify-center">
+                        <button className="btn btn-primary mr-4 px-10" type="submit" onClick={() => handleAccept()}>
+                            accept
+                        </button>
+                        <button className="btn btn-warning px-10" type="submit" onClick={() => handleReject()}>
+                            reject
+                        </button>
+                    </div>
+                </div>
             </div>
         </>
     );

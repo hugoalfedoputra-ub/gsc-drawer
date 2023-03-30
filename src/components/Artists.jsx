@@ -38,12 +38,15 @@ const Artists = () => {
     const ArtistPanel = ({ response }) => {
         return (
             <>
-                <div className="card rounded-none h-[140px] bg-white border-2">
+                <div className="card h-[140px] bg-primary text-white font-bold">
                     <figure className="h-[100px]">
                         <img src={response.profilePic} alt="profile" className=" avatar rounded-full object-cover h-12 w-12"></img>
                     </figure>
                     <div className="card-body p-0">
-                        <div className="cursor-pointer flex items-center justify-center underline" onClick={() => navigate("/user/" + response.userId)}>
+                        <div
+                            className="hover:cursor-pointer flex items-center justify-center hover:bg-white hover:text-primary mx-4 rounded-lg transition-all ease-in-out"
+                            onClick={() => navigate("/user/" + response.userId)}
+                        >
                             @{response.userId}
                         </div>
                     </div>
