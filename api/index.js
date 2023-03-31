@@ -41,6 +41,11 @@ admin.initializeApp({
 
 let snap = new midtransClient.Snap({
     isProduction: false,
+    is3ds: false,
+    isSanitized: false,
+    getBaseUrl() {
+        return "https://api.sandbox.midtrans.com/v2";
+    },
     serverKey: process.env.MIDTRANS_SERVER_KEY,
     clientKey: process.env.MIDTRANS_CLIENT_KEY,
 });
