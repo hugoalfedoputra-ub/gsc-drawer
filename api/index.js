@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
     res.send("Express on Vercel");
     console.log("hello on get request");
 });
-app.listen(5000 || process.env.PORT, () => {
+app.listen(process.env.PORT, () => {
     console.log("Running on port 5000.");
 });
 
