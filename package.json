@@ -38,7 +38,7 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build": "npm run build & node ../api/index.js",
+        "build": "npm run build & node ./api/index.js",
         "test": "react-scripts test",
         "eject": "react-scripts eject"
     },
