@@ -4,7 +4,7 @@ module.exports = {
     type: "service_account",
     project_id: "drawer-webapp",
     private_key_id: process.env.PRIVATE_KEY_ID,
-    private_key: process.env.PRIVATE_KEY,
+    private_key: process.env.PRIVATE_KEY ? process.env.PRIVATE_KEY.replace(/\\n/gm, "\n") : undefined,
     client_email: "firebase-adminsdk-hkovu@drawer-webapp.iam.gserviceaccount.com",
     client_id: "104624487036110398474",
     auth_uri: "https://accounts.google.com/o/oauth2/auth",
