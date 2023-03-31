@@ -10,6 +10,13 @@ app.use(cors());
 app.use(express.json());
 app.use(bodyParser.json());
 
+app.get("/", (req, res) => {
+    res.send("Express on Vercel");
+});
+app.listen(5000, () => {
+    console.log("Running on port 5000.");
+});
+
 console.log("hello world");
 
 const serviceAccount = require("./drawer-webapp-firebase-adminsdk-hkovu-65c07adb80");
