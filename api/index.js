@@ -12,8 +12,9 @@ app.use(bodyParser.json());
 
 app.get("/", (req, res) => {
     res.send("Express on Vercel");
+    console.log("hello on get request");
 });
-app.listen(5000, () => {
+app.listen(5000 || process.env.PORT, () => {
     console.log("Running on port 5000.");
 });
 
@@ -39,10 +40,11 @@ colRef.onSnapshot((querySnapshot) => {
     querySnapshot.forEach(
         (doc) => {
             if (doc.data().status === "pending") {
+                let priceInt = parseInt(doc.data().price);
                 let parameter = {
                     transaction_details: {
                         order_id: doc.id,
-                        gross_amount: parseInt(doc.data().price),
+                        gross_amount: priceInt,
                     },
                     credit_card: {
                         secure: true,
