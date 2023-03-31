@@ -41,8 +41,8 @@ admin.initializeApp({
 
 let snap = new midtransClient.Snap({
     isProduction: false,
-    serverKey: process.env.MIDTRANS_SERVER_KEY,
-    clientKey: process.env.MIDTRANS_CLIENT_KEY,
+    serverKey: atob(process.env.MIDTRANS_SERVER_KEY),
+    clientKey: atob(process.env.MIDTRANS_CLIENT_KEY),
 });
 
 const db = admin.firestore();
