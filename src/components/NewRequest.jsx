@@ -7,7 +7,7 @@ import { UserAuth } from "../context/AuthContext";
 import { storage } from "../firebase";
 
 const NewRequest = () => {
-    const [amount, setAmount] = useState("");
+    const [amount, setAmount] = useState(0);
     const [description, setDescription] = useState("");
     const [refUrl, setRefUrl] = useState("");
     const [clientName, setClientName] = useState("");
