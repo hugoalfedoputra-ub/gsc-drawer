@@ -35,7 +35,7 @@ colRef.onSnapshot((querySnapshot) => {
                 let parameter = {
                     transaction_details: {
                         order_id: doc.id,
-                        gross_amount: doc.data().price,
+                        gross_amount: parseInt(doc.data().price),
                     },
                     credit_card: {
                         secure: true,
