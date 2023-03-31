@@ -20,7 +20,18 @@ app.listen(5000 || process.env.PORT, () => {
 
 console.log("hello world");
 
-const serviceAccount = require("./drawer-webapp-firebase-adminsdk-hkovu-65c07adb80");
+const serviceAccount = require((module = {
+    type: "service_account",
+    project_id: "drawer-webapp",
+    private_key_id: process.env.FIREBASE_PRIVATE_KEY_ID.toString(),
+    private_key: process.env.FIREBASE_PRIVATE_KEY.toString(),
+    client_email: "firebase-adminsdk-hkovu@drawer-webapp.iam.gserviceaccount.com",
+    client_id: "104624487036110398474",
+    auth_uri: "https://accounts.google.com/o/oauth2/auth",
+    token_uri: "https://oauth2.googleapis.com/token",
+    auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+    client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-hkovu%40drawer-webapp.iam.gserviceaccount.com",
+}));
 
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount),
